@@ -1,0 +1,572 @@
+/* Reset and Base Styles */
+/* Custom Minecraft Font */
+@font-face {
+    font-family: 'Minecraft';
+    src: url('fonts/Minecraft.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f8f9fa;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Minecraft-style title for headers */
+.minecraft-title {
+    font-family: 'Minecraft', 'Press Start 2P', monospace;
+    font-weight: 400;
+    text-shadow: 2px 2px 0px rgba(0,0,0,0.2);
+    letter-spacing: 1px;
+}
+.content-panel {
+    background-color: white;
+    border-radius: 12px;
+    padding: 2rem;
+    margin: 2rem 0;
+    box-shadow: 0 4px 15px rgba(85, 107, 47, 0.1);
+    border: 1px solid rgba(85, 107, 47, 0.1);
+}
+
+.content-panel h2 {
+    color: #556b2f;
+    border-bottom: 3px solid #556b2f;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.content-panel h3 {
+    color: #556b2f;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.content-panel h4 {
+    color: #556b2f;
+    margin-top: 1.5rem;
+    margin-bottom: 0.8rem;
+    font-weight: 600;
+}
+
+/* Header */
+header {
+    background-color: white;
+    color: #556b2f;
+    padding: 2rem 0;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(85, 107, 47, 0.1);
+}
+
+header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.5px;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: #666;
+    font-weight: 400;
+}
+
+/* Navigation */
+nav {
+    background-color: white;
+    padding: 1rem 0;
+    box-shadow: 0 2px 8px rgba(85, 107, 47, 0.1);
+    border-bottom: 2px solid #556b2f;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+nav li {
+    margin: 0 2rem;
+}
+
+nav a {
+    color: #556b2f;
+    text-decoration: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    font-size: 1.05rem;
+}
+
+nav a:hover,
+nav a.active {
+    background-color: #556b2f;
+    color: white;
+    transform: translateY(-1px);
+}
+
+/* Main Content */
+main {
+    min-height: calc(100vh - 200px);
+    padding: 2rem 0;
+}
+
+/* Landing Page Styles */
+.landing-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.hero-landing {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    text-align: center;
+    gap: 3rem;
+}
+
+.hero-content {
+    max-width: 800px;
+}
+
+.hero-title {
+    font-family: 'Minecraft', 'Press Start 2P', monospace;
+    font-size: 3.5rem;
+    font-weight: 400;
+    color: #556b2f;
+    margin-bottom: 1rem;
+    text-shadow: 3px 3px 0px rgba(0,0,0,0.2);
+    letter-spacing: 2px;
+    line-height: 1.2;
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-weight: 400;
+}
+
+.hero-description {
+    font-size: 1.2rem;
+    color: #666;
+    font-weight: 300;
+}
+
+/* Visual Showcase */
+.visual-showcase {
+    width: 100%;
+    max-width: 900px;
+    margin: 2rem 0;
+}
+
+.placeholder-visual {
+    background: linear-gradient(135deg, #556b2f 0%, #6b8f37 100%);
+    border-radius: 12px;
+    padding: 3rem;
+    box-shadow: 0 10px 30px rgba(85, 107, 47, 0.3);
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.placeholder-visual::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="%23ffffff" stroke-width="0.5" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>') repeat;
+    opacity: 0.3;
+}
+
+.visual-content {
+    position: relative;
+    z-index: 1;
+    color: white;
+    text-align: center;
+}
+
+.plot-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.animated-dots {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    animation: pulse 2s infinite;
+}
+
+.dot:nth-child(2) {
+    animation-delay: 0.5s;
+}
+
+.dot:nth-child(3) {
+    animation-delay: 1s;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
+.visual-content p {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+.visual-content small {
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    min-width: 180px;
+    justify-content: center;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.btn-github {
+    background-color: #333;
+    color: white;
+    border: 2px solid #333;
+}
+
+.btn-github:hover {
+    background-color: #555;
+    border-color: #555;
+}
+
+.btn-primary {
+    background-color: #556b2f;
+    color: white;
+    border: 2px solid #556b2f;
+}
+
+.btn-primary:hover {
+    background-color: #6b8f37;
+    border-color: #6b8f37;
+}
+
+.github-icon, .arrow-icon {
+    flex-shrink: 0;
+}
+
+.arrow-icon {
+    transition: transform 0.3s ease;
+}
+
+.btn-primary:hover .arrow-icon {
+    transform: translateX(4px);
+}
+
+/* Section Styling */
+section {
+    margin-bottom: 3rem;
+}
+
+section h3 {
+    font-size: 1.8rem;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 0.5rem;
+}
+
+section h4 {
+    font-size: 1.3rem;
+    color: #34495e;
+    margin: 1.5rem 0 1rem 0;
+}
+
+/* Quick Links */
+.quick-links ul {
+    list-style: none;
+}
+
+.quick-links li {
+    margin: 0.7rem 0;
+}
+
+.quick-links a {
+    color: #3498db;
+    text-decoration: none;
+    font-size: 1.1rem;
+    border-left: 3px solid #3498db;
+    padding-left: 1rem;
+    display: block;
+    transition: all 0.3s ease;
+}
+
+.quick-links a:hover {
+    color: #2980b9;
+    border-left-color: #2980b9;
+    padding-left: 1.5rem;
+}
+
+/* Content Pages */
+.content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.content h2 {
+    font-size: 2rem;
+    color: #556b2f;
+    margin-bottom: 1.5rem;
+    border-bottom: 3px solid #556b2f;
+    padding-bottom: 0.5rem;
+}
+
+.content p {
+    margin-bottom: 1.2rem;
+    text-align: justify;
+    line-height: 1.7;
+}
+
+.content ul, .content ol {
+    margin-bottom: 1.2rem;
+    padding-left: 2rem;
+}
+
+.content li {
+    margin-bottom: 0.5rem;
+}
+
+/* Code blocks and pre-formatted text */
+pre, code {
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+}
+
+code {
+    padding: 0.2rem 0.4rem;
+    font-size: 0.9rem;
+}
+
+pre {
+    padding: 1rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(85, 107, 47, 0.1);
+}
+
+th, td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(85, 107, 47, 0.1);
+}
+
+th {
+    background-color: #556b2f;
+    color: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+td {
+    font-size: 0.9rem;
+}
+
+tr:hover {
+    background-color: rgba(85, 107, 47, 0.05);
+}
+
+/* Data Stats and Results Tables */
+.data-stats, .results-table {
+    margin: 1.5rem 0;
+}
+
+/* Visualization Placeholder */
+.visualization-placeholder {
+    background-color: #f8f9fa;
+    border: 2px dashed rgba(85, 107, 47, 0.3);
+    border-radius: 8px;
+    padding: 3rem;
+    text-align: center;
+    margin: 2rem 0;
+    color: #666;
+}
+
+/* Strengths and Limitations Layout */
+.strengths-limitations {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.strength-section, .limitation-section {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-left: 4px solid #556b2f;
+}
+
+.strength-section h5, .limitation-section h5 {
+    color: #556b2f;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.strength-section ul, .limitation-section ul {
+    margin: 0;
+    padding-left: 1.2rem;
+}
+
+.strength-section li, .limitation-section li {
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+/* Footer */
+footer {
+    background-color: #556b2f;
+    color: white;
+    text-align: center;
+    padding: 1.5rem 0;
+    margin-top: 3rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2rem;
+    }
+    
+    nav ul {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    nav li {
+        margin: 0.3rem 0;
+    }
+    
+    .hero-title {
+        font-size: 2.2rem;
+        letter-spacing: 1px;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .placeholder-visual {
+        padding: 2rem 1rem;
+        min-height: 300px;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn {
+        width: 100%;
+        max-width: 280px;
+    }
+    
+    .content-panel {
+        padding: 1.5rem;
+        margin: 1rem 0;
+    }
+    
+    .strengths-limitations {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .container {
+        padding: 0 15px;
+    }
+    
+    .landing-container {
+        padding: 0 15px;
+    }
+    
+    table {
+        font-size: 0.85rem;
+    }
+    
+    th, td {
+        padding: 0.7rem 0.5rem;
+    }
+}
