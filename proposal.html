@@ -26,25 +26,22 @@
             <section class="content-panel">
                 <h2>Introduction & Background</h2>
 
-                <h4>Project Introduction</h4>
                 <p>
-                    [Provide a comprehensive introduction to your MineTrack project. Explain what the project aims to accomplish and why it's important in the context of machine learning.]
+                    Estimating motion from visual input is a foundational challenge in robotics, computer vision, and autonomous systems. Visual Odometry (VO) seeks to recover an agent's trajectory from a sequence of images by estimating the relative transformation between consecutive frames. By composing these incremental transformations, a full trajectory can be reconstructed. Unlike full SLAM systems, visual odometry focuses purely on motion estimation and does not maintain a persistent global map or perform loop closure correction. Nevertheless, accurate VO remains a critical component of modern navigation systems.
                 </p>
 
-                <h4>Domain Background</h4>
                 <p>
-                    [Provide background information about the domain or field your project operates in. What context is necessary to understand your work?]
+                    In this project, we propose MineTrack, a learning-based visual odometry framework implemented in Minecraft. Minecraft provides a controllable 3D environment with precise ground-truth pose data, allowing reproducible evaluation of motion estimation performance. MineTrack adopts a two-part learning strategy:
+                </p>
+                <ul>
+                    <li>An unsupervised [whatever unsupervised preprocessing method we decide on] learns compact latent embeddings of gameplay frames.</li>
+                    <li>A supervised neural network predicts relative motion parameters from these embeddings.</li>
+                </ul>
+
+                <p>
+                    By decoupling representation learning from pose regression, MineTrack investigates whether unsupervised visual embeddings can encode sufficient geometric structure to support accurate trajectory reconstruction. Predicted transformations are sequentially composed and compared against ground-truth motion logs to evaluate drift and reconstruction error.
                 </p>
 
-                <h4>Related Work</h4>
-                <p>
-                    [Discuss existing research and approaches related to your problem. What have others done in this area?]
-                </p>
-
-                <h4>Gap Analysis</h4>
-                <p>
-                    [Identify gaps in existing work that your project aims to address. What makes your approach different or novel?]
-                </p>
             </section>
 
             <!-- Problem Definition Panel -->

@@ -64,6 +64,21 @@ body {
     font-weight: 600;
 }
 
+.content-panel p {
+    text-indent: 1.5em;
+    margin-bottom: 1rem;
+}
+
+.content-panel ul,
+.content-panel ol {
+    margin-left: 2rem;
+    margin-bottom: 1rem;
+}
+
+.content-panel li {
+    margin-bottom: 0.4rem;
+}
+
 /* Header */
 header {
     background-color: white;
