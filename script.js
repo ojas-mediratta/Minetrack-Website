@@ -4,7 +4,9 @@
 const bibliographyDatabase = {
     "scaramuzza2011": "D. Scaramuzza and F. Fraundorfer, 'Visual Odometry [Tutorial],' IEEE Robotics & Automation Magazine, vol. 18, no. 4, pp. 80-92, 2011.",
     "nister2004": "D. Nister, O. Naroditsky, and J. Bergen, 'Visual odometry,' in Proceedings of the 2004 IEEE Computer Society Conference on Computer Vision and Pattern Recognition, 2004.",
-    "minecraft2011": "Mojang Studios, 'Minecraft', 2011. [Video game]."
+    "minecraft2011": "Mojang Studios, 'Minecraft', 2011. [Video game].",
+    "wang2018": "S. Wang, R. Clark, H. Wen, and N. Trigoni, “End-to-end, sequence-to-sequence probabilistic visual odometry through deep neural networks,” The International Journal of Robotics Research, vol. 37, no. 4–5, pp. 513–542, Apr. 2018, doi: 10.1177/0278364917734298.",
+    "modality2023": "M. Memmel, R. Bachmann, and A. Zamir, “Modality-Invariant Visual Odometry for Embodied Vision,” presented at the Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, 2023, pp. 21549–21559. Accessed: Feb. 25, 2026. [Online]. Available: https://openaccess.thecvf.com/content/CVPR2023/html/Memmel_Modality-Invariant_Visual_Odometry_for_Embodied_Vision_CVPR_2023_paper.html"
 };
 
 // GitHub button handler
