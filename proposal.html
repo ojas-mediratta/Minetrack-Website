@@ -50,7 +50,16 @@
 
                 <h4>Problem Statement</h4>
                 <p>
-                    [Clearly define the problem you're trying to solve. What specific challenge or question are you addressing with machine learning techniques?]
+                    Reliable motion estimation from visual input is a core requirement for autonomous navigation. \\
+                    Visual Odometry estimates a systems trajectory by predicting the relative pose change between consecutive camera frames and composing those predictions over time. \\
+                    especially under changes in environment appearance such as textures, lighting and motion patterns. \\
+                    MineTrack tackles learning-based visual odometry in a controlled 3D environment. \\
+                    Given two consecutive RGB frames from Minecraft, we aim to predict the relative motion of the agent between frames (translation and rotation). \\
+                    By composing predicted frame-to-frame transforms over time, we reconstruct the full trajectory and measure drift versus ground truth.  
+                </p>
+                <h4>Research Question</h4>
+                <p>
+                    Do self-supervised visual embeddings learn geometry features that improve downstream relative pose regression and reduce trajectory drift?
                 </p>
 
                 <h4>Objectives</h4>
@@ -64,6 +73,16 @@
                 <p>
                     [Define the scope of the problem and any constraints or assumptions you are making.]
                 </p>
+
+                <h4>Motivation<h/h4> 
+                    <p>
+                        Motivation: While conducting SLAM in Minecraft is an impressive project in itself, our main motivation for this task is the extrapolation for SLAM in higher-fidelity virtual and physical environments. \\
+                        Minecraft serves as a fully controllable testbed for our supervised and unsupervised testing, as there are procedurally generated terrains with large-scale 3D spaces and dynamic lighting conditions. \\
+                        Compared to the real world, Minecraft provides perfect map data and ground truth poses, adjustable noise models, and repeatable simulation testing in an infinite and stochastic world. \\
+                        By training machine learning models to conduct SLAM in Minecraft, we can aim for eventual deployment in higher-fidelity virtual worlds and the physical world. \\
+                        Models validated in Minecraft can be transferred to photorealistic simulators with more realistic physics engines and sensor modules, with the ultimate goal being SLAM in real-world environments.
+                        
+                    </p>
             </section>
 
             <!-- Methods Panel -->
