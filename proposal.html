@@ -119,11 +119,6 @@
                     a transformer encoder with a pose regression head to produce output transforms.
                 </p>
 
-                <h4>Model Architecture</h4>
-                <p>
-                    [If applicable, describe your proposed model architecture, hyperparameters, or network structure.]
-                </p>
-
                 <h4>Evaluation Strategy</h4>
                 <p>
                     [Explain your planned evaluation metrics and validation strategy.]
@@ -139,10 +134,10 @@
 
                 <h4>Implementation Stack</h4>
                 <ul>
-                    <li><strong>Programming Language:</strong> [e.g., Python]</li>
-                    <li><strong>ML Libraries:</strong> [e.g., scikit-learn, TensorFlow, PyTorch]</li>
-                    <li><strong>Data Processing:</strong> [e.g., pandas, NumPy]</li>
-                    <li><strong>Visualization:</strong> [e.g., matplotlib, seaborn]</li>
+                    <li><strong>Programming Language:</strong> Python for learning, Java for data collection Minecraft mod</li>
+                    <li><strong>ML Libraries:</strong> PyTorch </li>
+                    <li><strong>Data Processing:</strong> NumPy, Python Image Library (PIL), OpenCV</li>
+                    <li><strong>Visualization:</strong> MatPlotLib</li>
                 </ul>
             </section>
 
@@ -153,34 +148,15 @@
                 <h4>Data Sources</h4>
                 <p>
                     [Describe potential data sources you plan to use. Where might the data come from?]
-                    Unlike full SLAM systems, visual odometry focuses purely on motion estimation and does not maintain a persistent global map or perform loop closure correction <span class="cite" data-ref="scaramuzza2011"></span>.
+                    We will produce all data used using our custom Minecraft mod.
+                    The mod transparently captures rendered frames and exact pose data during Minecraft
+                    gameplay transparently to the player and with minimal performance overhead,
+                    allowing disruption-free data generation by gameplaying.
+                    With a few hours of gameplay per team member we will have access
+                    to a dataset with millions of labelled images.
+                    To ensure adaptability across different biomes in Minecraft worlds
+                    we will target a minimum of 20 minutes of unique gameplay per biome.
                 </p>
-
-                <h4>Dataset Characteristics</h4>
-                <div class="data-stats">
-                    <table>
-                        <tr>
-                            <th>Characteristic</th>
-                            <th>Value</th>
-                        </tr>
-                        <tr>
-                            <td>Expected Number of Samples</td>
-                            <td>[Estimated number of rows/instances]</td>
-                        </tr>
-                        <tr>
-                            <td>Number of Features</td>
-                            <td>[Expected number of columns/attributes]</td>
-                        </tr>
-                        <tr>
-                            <td>Data Types</td>
-                            <td>[Numerical, categorical, text, etc.]</td>
-                        </tr>
-                        <tr>
-                            <td>Time Period</td>
-                            <td>[When was or will the data be collected]</td>
-                        </tr>
-                    </table>
-                </div>
 
                 <h4>Data Preprocessing Plan</h4>
                 <p>
@@ -200,6 +176,8 @@
                 <h4>Expected Outcomes</h4>
                 <p>
                     [Describe what results you anticipate achieving. What does success look like for this project?]
+                    We anticipate our model will accurately track motion in Minecraft worlds from rendered video
+                    with low drift and moderate computing power use, especially with modern GPU/NPU hardware.
                 </p>
 
                 <h4>Anticipated Performance Metrics</h4>
@@ -214,7 +192,10 @@
 
                 <h4>Potential Impact</h4>
                 <p>
-                    [Discuss the potential impact of your results. How might your findings contribute to the field or solve the defined problem?]
+                    MineTrack is intended to demonstrate feasibility of efficient ML models for VO
+                    in a visually constrained environment (Minecraft). In the future, these models
+                    could be adapted to real-world robotics applications by retraining, potentially
+                    reducing compute and power requirements for next-generation robotics.
                 </p>
 
                 <h4>Challenges & Risks</h4>
