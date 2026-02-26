@@ -6,7 +6,11 @@ const bibliographyDatabase = {
     "nister2004": "D. Nister, O. Naroditsky, and J. Bergen, 'Visual odometry,' in Proceedings of the 2004 IEEE Computer Society Conference on Computer Vision and Pattern Recognition, 2004.",
     "minecraft2011": "Mojang Studios, 'Minecraft', 2011. [Video game].",
     "wang2018": "S. Wang, R. Clark, H. Wen, and N. Trigoni, “End-to-end, sequence-to-sequence probabilistic visual odometry through deep neural networks,” The International Journal of Robotics Research, vol. 37, no. 4–5, pp. 513–542, Apr. 2018, doi: 10.1177/0278364917734298.",
-    "modality2023": "M. Memmel, R. Bachmann, and A. Zamir, “Modality-Invariant Visual Odometry for Embodied Vision,” presented at the Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, 2023, pp. 21549–21559. Accessed: Feb. 25, 2026. [Online]. Available: https://openaccess.thecvf.com/content/CVPR2023/html/Memmel_Modality-Invariant_Visual_Odometry_for_Embodied_Vision_CVPR_2023_paper.html"
+    "modality2023": "M. Memmel, R. Bachmann, and A. Zamir, “Modality-Invariant Visual Odometry for Embodied Vision,” presented at the Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, 2023, pp. 21549–21559. Accessed: Feb. 25, 2026. [Online]. Available: https://openaccess.thecvf.com/content/CVPR2023/html/Memmel_Modality-Invariant_Visual_Odometry_for_Embodied_Vision_CVPR_2023_paper.html",
+    "endtoend2025": "A. O. Françani and M. R. O. A. Maximo, “Transformer-Based Model for Monocular Visual Odometry: A Video Understanding Approach,” IEEE Access, vol. 13, pp. 13959–13971, 2025, doi: 10.1109/ACCESS.2025.3531667.",
+    "metrics2014": "T. Ciarfuglia, G. Costante, P. Valigi, E. Ricci, “Evaluation for non-geometric methods for visual odometry” Robotics and Autonomous Systems, vol. 62, issue 12, p. 1717, August 2014. Available: https://doi.org/10.1016/j.robot.2014.08.001",
+    "kitti": "A. Geiger, P. Lenz, and R. Urtasun, “Are we ready for autonomous driving? The KITTI vision benchmark suite,” in 2012 IEEE Conference on Computer Vision and Pattern Recognition, Jun. 2012, pp. 3354–3361. doi: 10.1109/CVPR.2012.6248074.",
+    "pose": "J. Sturm, N. Engelhard, F. Endres, W. Burgard, and D. Cremers, “A benchmark for the evaluation of RGB-D SLAM systems,” in 2012 IEEE/RSJ International Conference on Intelligent Robots and Systems, Oct. 2012, pp. 573–580. doi: 10.1109/IROS.2012.6385773."
 };
 
 // GitHub button handler

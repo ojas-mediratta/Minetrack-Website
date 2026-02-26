@@ -89,26 +89,27 @@
 
                 <h4>Approach Overview</h4>
                 <p>
-                    [Provide a high-level overview of your machine learning approach. What type of problem is this and what general strategy are you using?]
                     We aim to solve a visual odometry (VO) problem formulated as regression of
                     image-to-image transforms from sequences of monocular RGB input images.
-                    Our strategy is to use an image encoder to produce embedding vectors from each image
-                    and a second stage to produce transforms from sequences of embedding vectors.
+                    We propose a two-stage encoder-regressor model to produce vector embeddings from input images
+                    and transform outputs from embeddings.
                 </p>
 
                 <h4>Machine Learning Algorithms</h4>
                 <p>
-                    [Detail the specific algorithms you plan to use or compare. Why did you choose these approaches?]
-                    We will compare the use of convolutional neural network (CNN) and vision transformer (ViT) encoders
-                    to produce the embedding vectors. Both CNN
-                    <span class="cite" data-ref="wang2018"></span>
-                    and ViT <span class="cite" data-ref="modality2023"></span>
-                    approaches have been used to encode images for VO. We plan
-                    to compare the performance and training time of CNN and ViT architectures
-                    and compare results. We will also compare the use of
-                    RNN
-                    <span class="cite" data-ref="wang2018"></span>
-                    , transformer
+                    CNN encoders are well-studied and effective for odometry
+                    <span class="cite" data-ref="wang2018"></span>.
+                    The first stage in the proposed architecture, the CNN encoder, ingests RGB input images and produces a series of lower-dimensional embedding vectors, one per image.
+                    We plan to train this encoder as an autoencoder, using the reconstruction error from converting the embeddings back into raw images using a second CNN.
+                    The second stage uses an MLP, RNN, or SVM to regress an output transform.
+                    The MLP approach takes two embedding vectors from each sequential pair of images and estimates a 3D transform between them.
+                    The RNN takes in a series of embedding vectors and uses its own state to produce a series of output transforms.
+                    Finally, the SVM takes concatenated pairs of embedding vectors and uses a hyperplane in their combined vector space to regress a transform output.
+                    Vision transformers (ViTs) have also been shown to be effective at visual odometry due to their inclusion of vision encoders and handling multiple images without time-dependence like RNNs
+                    <span class="cite" data-ref="endtoend2025"></span>.
+                    Therefore, we also propose a modified end-to-end ViT as an alternative to the encoder-regressor pipeline.
+                    This model would use patch embedding on input images and
+                    a transformer encoder with a pose regression head to produce output transforms.
                 </p>
 
                 <h4>Model Architecture</h4>
@@ -119,6 +120,14 @@
                 <h4>Evaluation Strategy</h4>
                 <p>
                     [Explain your planned evaluation metrics and validation strategy.]
+                    We propose the following Visual Odometry metrics to compare the performance of our various models:
+                    Absolute Trajectory Error (ATE) which measures absolute RMS error across the whole trajectory
+                    <span class="cite" data-ref="pose"></span>,
+                    Relative Pose Error (RPE)
+                    which measures local RMS transform accuracy,
+                    <span class="cite" data-ref="pose"></span>,
+                    and Translation/Rotation error using the KITTI standard
+                    <span class="cite" data-ref="kitti"></span>.
                 </p>
 
                 <h4>Implementation Stack</h4>
@@ -187,31 +196,14 @@
                 </p>
 
                 <h4>Anticipated Performance Metrics</h4>
-                <div class="results-table">
-                    <table>
-                        <tr>
-                            <th>Model/Algorithm</th>
-                            <th>Accuracy</th>
-                            <th>Precision</th>
-                            <th>Recall</th>
-                            <th>F1-Score</th>
-                        </tr>
-                        <tr>
-                            <td>[Algorithm 1]</td>
-                            <td>[Expected Value]</td>
-                            <td>[Expected Value]</td>
-                            <td>[Expected Value]</td>
-                            <td>[Expected Value]</td>
-                        </tr>
-                        <tr>
-                            <td>[Algorithm 2]</td>
-                            <td>[Expected Value]</td>
-                            <td>[Expected Value]</td>
-                            <td>[Expected Value]</td>
-                            <td>[Expected Value]</td>
-                        </tr>
-                    </table>
-                </div>
+                <p>
+                    It will be difficult to directly compare the accuracy of our method to popular baselines
+                    since our method will be trained exclusively on Minecraft gameplay,
+                    but based on the benchmarks for learning-based methods on the KITTI Dataset from
+                    <span class="cite" data-ref="kitti"></span>,
+                    we anticipate achieving a relative translation error and rotation error
+                    &le; 10% and &le; 10&deg; respectively for roughly KITTI-length visual odometry sequences.
+                </p>
 
                 <h4>Potential Impact</h4>
                 <p>
