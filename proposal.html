@@ -27,27 +27,22 @@
                 <h2>Introduction & Background</h2>
 
                 <p>
-                    Estimating motion from visual input is a core problem in robotics and computer vision. Visual Odometry (VO) aims to recover an agent's trajectory by estimating relative transformations between consecutive image frames and composing them over time. Robust VO remains essential for navigation, state estimation, and autonomous control.                
+                    Estimating motion from visual input is a central problem in robotics and computer vision. Visual Odometry (VO) seeks to recover an agent’s trajectory by estimating relative transformations between consecutive image frames and composing them over time. Reliable VO is critical for navigation, localization, and autonomous control.
                 </p>
 
                 <p>
-                    Classical VO pipelines rely on strategies like feature detection and geometric optimization. Foundational surveys categorize VO methods into feature-based and appearance-based approaches, highlighting persistent challenges such as drift accumulation and sensitivity to visual ambiguity [1]. More recent reviews emphasize the transition toward learning-based methods that replace hand-engineered features with neural representations, particularly in monocular settings where scale and depth ambiguities are significant challenges [2], [3]. These works motivate multi-stage architectures that separate representation learning from motion regression.              
+                    Traditional VO pipelines rely on feature detection and geometric optimization, typically categorized as feature-based or appearance-based methods. Foundational surveys highlight persistent challenges such as drift accumulation and sensitivity to visual ambiguity <span class="cite" data-ref="scaramuzza2011"></span>. More recent reviews emphasize the shift toward learning-based methods that replace hand-engineered features with neural representations, particularly in monocular settings where scale and depth ambiguities are significant challenges <span class="cite" data-ref="moratuwage2016"></span>, <span class="cite" data-ref="monocularsurvey2023"></span>. These trends motivate architectures that separate representation learning from motion estimation.
                 </p>
 
                 <p>
-                    In this project, we propose MineTrack, a learning-based visual odometry framework implemented in Minecraft. Minecraft provides a controllable 3D environment with exact ground-truth pose information, enabling reproducible experimentation without sensor calibration or noise confounds. Using a custom mod for the game, we log per-frame position and orientation, allowing precise computation of relative transformation matrices. Our dataset will consist of recorded gameplay trajectories across diverse environments (e.g., natural terrain and built structures), captured at a fixed frame rate and resolution. MineTrack adopts a modular learning strategy that separates representation learning from motion estimation. We will experiment with several unsupervised preprocessing approaches such as autoencoder-based embedding models and other latent representation techniques to learn compact visual encodings of gameplay frames. These learned representations will then serve as input to a supervised neural network that predicts relative motion parameters, with outputs as transformation matrices, between consecutive frames. 
+                    We propose MineTrack, a learning-based visual odometry framework implemented in Minecraft. The game provides a controllable 3D environment with exact ground-truth pose information, enabling reproducible experimentation without sensor calibration noise. Using a custom mod, we log per-frame position and orientation to compute precise relative transformations. Our dataset consists of recorded gameplay trajectories across diverse environments at fixed frame rates and resolutions.
                 </p>
 
                 <p>
-                    By decoupling representation learning from pose regression, MineTrack investigates whether unsupervised visual embeddings encode sufficient geometric structure to support accurate trajectory reconstruction. Predicted transformations are sequentially composed and evaluated against ground-truth motion to quantify drift and trajectory error.                
+                    MineTrack adopts a modular approach: unsupervised models (e.g., autoencoders) learn compact visual embeddings, which are then passed to a supervised network that predicts relative motion between frames. By decoupling representation learning from pose regression, we evaluate whether unsupervised embeddings capture sufficient geometric structure for accurate trajectory reconstruction. Predicted transformations are composed and compared to ground truth to measure drift and trajectory error.
                 </p>
 
-                <h4>Key References</h4>
-                [1] D. Scaramuzza and F. Fraundorfer, “Visual odometry [tutorial],” IEEE Robotics & Automation Magazine, vol. 18, no. 4, pp. 80–92, Dec. 2011.
-
-                [2] A. M. Moratuwage, D. Wang, and S. Wang, “Review of visual odometry types, approaches, challenges and applications,” SpringerPlus, vol. 5, no. 1, 2016.
-
-                [3] A. K. et al., “Monocular Visual SLAM, Visual Odometry and Structure from Motion Methods Applied to 3D Reconstruction: A Comprehensive Survey,” 2023.
+               
 
             </section>
 
