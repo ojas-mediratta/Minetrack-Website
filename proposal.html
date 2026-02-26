@@ -90,11 +90,25 @@
                 <h4>Approach Overview</h4>
                 <p>
                     [Provide a high-level overview of your machine learning approach. What type of problem is this and what general strategy are you using?]
+                    We aim to solve a visual odometry (VO) problem formulated as regression of
+                    image-to-image transforms from sequences of monocular RGB input images.
+                    Our strategy is to use an image encoder to produce embedding vectors from each image
+                    and a second stage to produce transforms from sequences of embedding vectors.
                 </p>
 
                 <h4>Machine Learning Algorithms</h4>
                 <p>
                     [Detail the specific algorithms you plan to use or compare. Why did you choose these approaches?]
+                    We will compare the use of convolutional neural network (CNN) and vision transformer (ViT) encoders
+                    to produce the embedding vectors. Both CNN
+                    <span class="cite" data-ref="wang2018"></span>
+                    and ViT <span class="cite" data-ref="modality2023"></span>
+                    approaches have been used to encode images for VO. We plan
+                    to compare the performance and training time of CNN and ViT architectures
+                    and compare results. We will also compare the use of
+                    RNN
+                    <span class="cite" data-ref="wang2018"></span>
+                    , transformer
                 </p>
 
                 <h4>Model Architecture</h4>
@@ -123,6 +137,7 @@
                 <h4>Data Sources</h4>
                 <p>
                     [Describe potential data sources you plan to use. Where might the data come from?]
+                    Unlike full SLAM systems, visual odometry focuses purely on motion estimation and does not maintain a persistent global map or perform loop closure correction <span class="cite" data-ref="scaramuzza2011"></span>.
                 </p>
 
                 <h4>Dataset Characteristics</h4>
@@ -235,6 +250,12 @@
                 <p>
                     [Summarize the anticipated conclusions and the proposed contribution of your work to the field.]
                 </p>
+            </section>
+
+            <section class="content-panel">
+                <h2>References</h2>
+                <ul id="bibliography-list" class="references-list">
+                    </ul>
             </section>
 
         </div>

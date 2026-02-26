@@ -585,3 +585,29 @@ footer {
         padding: 0.7rem 0.5rem;
     }
 }
+
+.cite a {
+    text-decoration: none;
+    color: #3498db;
+    font-size: 0.9em;
+    /* vertical-align: super; Optional: Makes it superscript. Remove for standard inline IEEE brackets */
+    line-height: 0;
+}
+
+.cite a:hover {
+    text-decoration: underline;
+    color: #2980b9;
+}
+
+.references-list {
+    list-style-type: none;
+    margin-left: 0;
+    padding-left: 0;
+}
+
+.references-list li {
+    margin-bottom: 0.8rem;
+    text-indent: -1.5rem;
+    padding-left: 1.5rem;
+    line-height: 1.4;
+}
