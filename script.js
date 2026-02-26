@@ -10,7 +10,9 @@ const bibliographyDatabase = {
     "endtoend2025": "A. O. Françani and M. R. O. A. Maximo, “Transformer-Based Model for Monocular Visual Odometry: A Video Understanding Approach,” IEEE Access, vol. 13, pp. 13959–13971, 2025, doi: 10.1109/ACCESS.2025.3531667.",
     "metrics2014": "T. Ciarfuglia, G. Costante, P. Valigi, E. Ricci, “Evaluation for non-geometric methods for visual odometry” Robotics and Autonomous Systems, vol. 62, issue 12, p. 1717, August 2014. Available: https://doi.org/10.1016/j.robot.2014.08.001",
     "kitti": "A. Geiger, P. Lenz, and R. Urtasun, “Are we ready for autonomous driving? The KITTI vision benchmark suite,” in 2012 IEEE Conference on Computer Vision and Pattern Recognition, Jun. 2012, pp. 3354–3361. doi: 10.1109/CVPR.2012.6248074.",
-    "pose": "J. Sturm, N. Engelhard, F. Endres, W. Burgard, and D. Cremers, “A benchmark for the evaluation of RGB-D SLAM systems,” in 2012 IEEE/RSJ International Conference on Intelligent Robots and Systems, Oct. 2012, pp. 573–580. doi: 10.1109/IROS.2012.6385773."
+    "pose": "J. Sturm, N. Engelhard, F. Endres, W. Burgard, and D. Cremers, \"A benchmark for the evaluation of RGB-D SLAM systems,\" in 2012 IEEE/RSJ International Conference on Intelligent Robots and Systems, Oct. 2012, pp. 573–580. doi: 10.1109/IROS.2012.6385773.",
+    "moratuwage2016": "A. M. Moratuwage, D. Wang, and S. Wang, \"Review of visual odometry types, approaches, challenges and applications,\" SpringerPlus, vol. 5, no. 1, 2016.",
+    "monocularsurvey2023": "A. K. et al., \"Monocular Visual SLAM, Visual Odometry and Structure from Motion Methods Applied to 3D Reconstruction: A Comprehensive Survey,\" 2023."
 };
 
 // GitHub button handler
