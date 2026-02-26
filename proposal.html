@@ -27,19 +27,19 @@
                 <h2>Introduction & Background</h2>
 
                 <p>
-                    Estimating motion from visual input is a central problem in robotics and computer vision. Visual Odometry (VO) seeks to recover an agent’s trajectory by estimating relative transformations between consecutive image frames and composing them over time. Reliable VO is critical for navigation, localization, and autonomous control.
+                    Estimating motion from visual input is a central problem in robotics and computer vision. Visual Odometry (VO) recovers 3D poses from a sequence of camera frames. Reliable VO is critical for successful robot autonomy.
                 </p>
 
                 <p>
-                    Traditional VO pipelines rely on feature detection and geometric optimization, typically categorized as feature-based or appearance-based methods. Foundational surveys highlight persistent challenges such as drift accumulation and sensitivity to visual ambiguity <span class="cite" data-ref="scaramuzza2011"></span>. More recent reviews emphasize the shift toward learning-based methods that replace hand-engineered features with neural representations, particularly in monocular settings where scale and depth ambiguities are significant challenges <span class="cite" data-ref="moratuwage2016"></span>, <span class="cite" data-ref="monocularsurvey2023"></span>. These trends motivate architectures that separate representation learning from motion estimation.
+                    Traditional VO pipelines rely on feature detection and geometric optimization, and are sensitive to visual repetition and lighting changes <span class="cite" data-ref="scaramuzza2011"></span>. More recent reviews emphasize learning methods more robust to scale and lighting shifts <span class="cite" data-ref="moratuwage2016"></span>, <span class="cite" data-ref="monocularsurvey2023"></span>.
                 </p>
 
                 <p>
-                    We propose MineTrack, a learning-based visual odometry framework implemented in Minecraft. The game provides a controllable 3D environment with exact ground-truth pose information, enabling reproducible experimentation without sensor calibration noise. Using a custom mod, we log per-frame position and orientation to compute precise relative transformations. Our dataset consists of recorded gameplay trajectories across diverse environments at fixed frame rates and resolutions.
+                    We propose MineTrack, a learning-based visual odometry framework implemented for Minecraft. Minecraft provides a procedurally-generated 3D world, enabling reproducible experimentation without significant noise. Using a custom mod, we log ground-trugh Minecraft frames and transforms. Our dataset consists of recorded gameplay and trajectories at fixed resolution.
                 </p>
 
                 <p>
-                    MineTrack adopts a modular approach: unsupervised models (e.g., autoencoders) learn compact visual embeddings, which are then passed to a supervised network that predicts relative motion between frames. By decoupling representation learning from pose regression, we evaluate whether unsupervised embeddings capture sufficient geometric structure for accurate trajectory reconstruction. Predicted transformations are composed and compared to ground truth to measure drift and trajectory error.
+                    MineTrack adopts a modular approach: unsupervised models (autoencoders) learn compact visual embeddings, passed to a supervised network that predicts relative motion between frames. By decoupling representation learning from pose regression, we evaluate whether unsupervised embeddings capture sufficient geometric structure for accurate trajectory reconstruction. Predicted transformations are composed and compared to ground truth to measure drift and trajectory error.
                 </p>
 
                
@@ -51,8 +51,7 @@
                 <h2>Problem Definition</h2>
             <p>
               Reliable motion estimation from visual input is a core requirement for autonomous navigation.<br>
-              Visual Odometry estimates a systems trajectory by predicting the relative pose change between consecutive camera frames and composing those predictions over time.<br>
-              especially under changes in environment appearance such as textures, lighting and motion patterns.<br>
+              Visual Odometry estimates trajectory by estimating consecutive transforms between camera poses.<br>
               MineTrack tackles learning-based visual odometry in a controlled 3D environment.<br>
               Given two consecutive RGB frames from Minecraft, we aim to predict the relative motion of the agent between frames (translation and rotation).<br>
               By composing predicted frame-to-frame transforms over time, we reconstruct the full trajectory and measure drift versus ground truth.
@@ -77,10 +76,7 @@
             
             <h4>Motivation</h4>
             <p>
-              Motivation: While conducting SLAM in Minecraft is an impressive project in itself, our main motivation for this task is the extrapolation for SLAM in higher-fidelity virtual and physical environments.<br>
-              Minecraft serves as a fully controllable testbed for our supervised and unsupervised testing, as there are procedurally generated terrains with large-scale 3D spaces and dynamic lighting conditions.<br>
-              Compared to the real world, Minecraft provides perfect map data and ground truth poses, adjustable noise models, and repeatable simulation testing in an infinite and stochastic world.<br>
-              By training machine learning models to conduct SLAM in Minecraft, we can aim for eventual deployment in higher-fidelity virtual worlds and the physical world.<br>
+              Minecraft provides easier data collection and a more constrained environment than the real world, allowing for easier model development and testing.<br>
               Models validated in Minecraft can be transferred to photorealistic simulators with more realistic physics engines and sensor modules, with the ultimate goal being SLAM in real-world environments.
             </p>
             </section>
@@ -91,8 +87,8 @@
 
                 <h4>Approach Overview</h4>
                 <p>
-                    We aim to solve a visual odometry (VO) problem formulated as regression of
-                    image-to-image transforms from sequences of monocular RGB input images.
+                    We solve VO as a regression of
+                    image-to-image transforms between RGB input images.
                     We propose a two-stage encoder-regressor model to produce vector embeddings from input images
                     and transform outputs from embeddings.
                 </p>
@@ -101,22 +97,17 @@
                 <p>
                     CNN encoders are well-studied and effective for odometry
                     <span class="cite" data-ref="wang2018"></span>.
-                    The first stage in the proposed architecture, the CNN encoder, ingests RGB input images and produces a series of lower-dimensional embedding vectors, one per image.
-                    We plan to train this encoder as an autoencoder, using the reconstruction error from converting the embeddings back into raw images using a second CNN.
-                    The second stage uses an MLP, RNN, or SVM to regress an output transform.
-                    The MLP approach takes two embedding vectors from each sequential pair of images and estimates a 3D transform between them.
-                    The RNN takes in a series of embedding vectors and uses its own state to produce a series of output transforms.
-                    Finally, the SVM takes concatenated pairs of embedding vectors and uses a hyperplane in their combined vector space to regress a transform output.
-                    Vision transformers (ViTs) have also been shown to be effective at visual odometry due to their inclusion of vision encoders and handling multiple images without time-dependence like RNNs
+                    The first stage is a CNN encoder trained as an autoencoder with self-supervision.
+                    The second stage uses an MLP to take two embedding vectors from each sequential pair of images and estimate a 3D transform between them,
+                    or an RNN ingesting a series of embedding vectors and using its own state to produce a series of output transforms.
+                    Vision transformers (ViTs) are also a strong candidate due to their sequential image handling
                     <span class="cite" data-ref="endtoend2025"></span>.
-                    Therefore, we also propose a modified end-to-end ViT as an alternative to the encoder-regressor pipeline.
-                    This model would use patch embedding on input images and
-                    a transformer encoder with a pose regression head to produce output transforms.
+                    Therefore, we also propose a ViT as an alternative to the encoder-regressor pipeline,
+                    using image patch embedding and a transformer encoder with pose regression head for output.
                 </p>
 
                 <h4>Evaluation Strategy</h4>
                 <p>
-                    [Explain your planned evaluation metrics and validation strategy.]
                     We propose the following Visual Odometry metrics to compare the performance of our various models:
                     Absolute Trajectory Error (ATE) which measures absolute RMS error across the whole trajectory
                     <span class="cite" data-ref="pose"></span>,
@@ -142,11 +133,8 @@
 
                 <h4>Data Sources</h4>
                 <p>
-                    [Describe potential data sources you plan to use. Where might the data come from?]
-                    We will produce all data used using our custom Minecraft mod.
-                    The mod transparently captures rendered frames and exact pose data during Minecraft
-                    gameplay transparently to the player and with minimal performance overhead,
-                    allowing disruption-free data generation by gameplaying.
+                    Our dataset will come from our custom Minecraft mod, which captures frames and associated pose
+                    data from standard Minecraft gameplay.
                     With a few hours of gameplay per team member we will have access
                     to a dataset with millions of labelled images.
                     To ensure adaptability across different biomes in Minecraft worlds
@@ -155,12 +143,10 @@
 
                 <h4>Data Preprocessing Plan</h4>
                 <p>
-                    [Describe your planned data cleaning and preprocessing pipeline. What steps will be taken to prepare the data for machine learning?]
-                </p>
-
-                <h4>Feature Engineering</h4>
-                <p>
-                    [Explain how you plan to select, transform, or create features for your model. What features are expected to be most important?]
+                    We will use the data collection mod to crop and scale the original rendered Minecraft frames to 256x256 square.
+                    Additionally, we will experiment with data augmentation by modulation of scene
+                    brightenss and contrast and introduction of random noise to decrease the brittleness
+                    of the vision encoder.
                 </p>
             </section>
 
@@ -170,16 +156,13 @@
 
                 <h4>Expected Outcomes</h4>
                 <p>
-                    [Describe what results you anticipate achieving. What does success look like for this project?]
-                    We anticipate our model will accurately track motion in Minecraft worlds from rendered video
-                    with low drift and moderate computing power use, especially with modern GPU/NPU hardware.
+                    We anticipate our model will accurately and robustly track player motion
+                    in Minecraft from rendered video with moderate resource usage.
                 </p>
 
                 <h4>Anticipated Performance Metrics</h4>
                 <p>
-                    It will be difficult to directly compare the accuracy of our method to popular baselines
-                    since our method will be trained exclusively on Minecraft gameplay,
-                    but based on the benchmarks for learning-based methods on the KITTI Dataset from
+                    Based on the benchmarks for learning-based methods on the KITTI Dataset from
                     <span class="cite" data-ref="kitti"></span>,
                     we anticipate achieving a relative translation error and rotation error
                     &le; 10% and &le; 10&deg; respectively for roughly KITTI-length visual odometry sequences.
@@ -187,43 +170,8 @@
 
                 <h4>Potential Impact</h4>
                 <p>
-                    MineTrack is intended to demonstrate feasibility of efficient ML models for VO
-                    in a visually constrained environment (Minecraft). In the future, these models
-                    could be adapted to real-world robotics applications by retraining, potentially
-                    reducing compute and power requirements for next-generation robotics.
-                </p>
-
-                <h4>Challenges & Risks</h4>
-                <div class="strengths-limitations">
-                    <div class="strength-section">
-                        <h5>Opportunities</h5>
-                        <ul>
-                            <li>[Opportunity 1]</li>
-                            <li>[Opportunity 2]</li>
-                            <li>[Opportunity 3]</li>
-                        </ul>
-                    </div>
-                    <div class="limitation-section">
-                        <h5>Risks</h5>
-                        <ul>
-                            <li>[Risk 1]</li>
-                            <li>[Risk 2]</li>
-                            <li>[Risk 3]</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <h4>Visualizations</h4>
-                <p>
-                    [Describe the types of visualizations you expect to produce, such as learning curves, confusion matrices, feature importance plots, etc.]
-                </p>
-                <div class="visualization-placeholder">
-                    <p><em>Add your proposed visualizations here</em></p>
-                </div>
-
-                <h4>Conclusions</h4>
-                <p>
-                    [Summarize the anticipated conclusions and the proposed contribution of your work to the field.]
+                    Algorithms developed in MineTrack could be adapted to track robot motion in the real world
+                    with less energy and compute use than current-gen models, reducing resource usage.
                 </p>
             </section>
 
