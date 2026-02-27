@@ -15,86 +15,92 @@ const bibliographyDatabase = {
     "monocularsurvey2023": "A. K. et al., \"Monocular Visual SLAM, Visual Odometry and Structure from Motion Methods Applied to 3D Reconstruction: A Comprehensive Survey,\" 2023."
 };
 
-// GitHub button handler
 document.addEventListener('DOMContentLoaded', function() {
+
+    // ===== Sticky Nav Shadow =====
+    const nav = document.querySelector('nav');
+    if (nav) {
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 10) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        }, { passive: true });
+    }
+
+    // ===== Scroll-triggered Fade-in Animations =====
+    const fadeElements = document.querySelectorAll('.fade-in');
+    if (fadeElements.length > 0) {
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+        fadeElements.forEach(function(el) {
+            observer.observe(el);
+        });
+    }
+
+    // ===== GitHub Button Handler =====
     const githubBtn = document.getElementById('github-btn');
-    
     if (githubBtn) {
         githubBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            // Replace this URL with your actual GitHub repository
             const githubURL = 'https://github.com/yourusername/minetrack-project';
-            
-            // Uncomment the line below when you have your GitHub repo ready
-            // window.open(githubURL, '_blank');
-            
-            // Temporary alert - remove this when you add your real GitHub link
+            // Uncomment when ready: window.open(githubURL, '_blank');
             alert('Add your GitHub repository URL in script.js!');
         });
     }
-    
-    // Add smooth scrolling for any internal links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
+
+    // ===== Smooth Scrolling =====
+    document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+        anchor.addEventListener('click', function(e) {
             e.preventDefault();
             const target = document.querySelector(this.getAttribute('href'));
             if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         });
     });
-});
 
-// Add some interactive animations
-function addHoverEffects() {
+    // ===== Visual Showcase Hover =====
     const visualShowcase = document.querySelector('.placeholder-visual');
-    
     if (visualShowcase) {
         visualShowcase.addEventListener('mouseenter', function() {
-            this.style.transform = 'scale(1.02)';
+            this.style.transform = 'scale(1.015)';
         });
-        
         visualShowcase.addEventListener('mouseleave', function() {
             this.style.transform = 'scale(1)';
         });
     }
-}
 
-// Initialize hover effects when DOM is loaded
-document.addEventListener('DOMContentLoaded', addHoverEffects);
-
-// manage citations
-document.addEventListener('DOMContentLoaded', function() {
+    // ===== Citation Manager =====
     const citeElements = document.querySelectorAll('.cite');
     const bibliographySection = document.getElementById('bibliography-list');
-    
-    if (citeElements.length === 0 || !bibliographySection) return;
 
-    let currentCiteNumber = 1;
-    const assignedNumbers = {};
+    if (citeElements.length > 0 && bibliographySection) {
+        let currentCiteNumber = 1;
+        const assignedNumbers = {};
 
-    citeElements.forEach(el => {
-        const refId = el.getAttribute('data-ref');
-        
-        // If this is a new reference, assign it the next available number
-        if (!assignedNumbers[refId]) {
-            assignedNumbers[refId] = currentCiteNumber++;
-            
-            // Create the list item in the bibliography
-            const li = document.createElement('li');
-            li.id = `ref-${refId}`;
-            
-            // Look up the citation text, or provide a fallback if it's missing
-            const citationText = bibliographyDatabase[refId] || "Citation missing for: " + refId;
-            li.innerHTML = `[${assignedNumbers[refId]}] ${citationText}`;
-            bibliographySection.appendChild(li);
-        }
-        
-        // Replace the HTML element with an IEEE formatted bracketed link
-        const citeNum = assignedNumbers[refId];
-        el.innerHTML = `<a href="#ref-${refId}">[${citeNum}]</a>`;
-    });
+        citeElements.forEach(function(el) {
+            const refId = el.getAttribute('data-ref');
+
+            if (!assignedNumbers[refId]) {
+                assignedNumbers[refId] = currentCiteNumber++;
+                const li = document.createElement('li');
+                li.id = 'ref-' + refId;
+                const citationText = bibliographyDatabase[refId] || "Citation missing for: " + refId;
+                li.innerHTML = '[' + assignedNumbers[refId] + '] ' + citationText;
+                bibliographySection.appendChild(li);
+            }
+
+            const citeNum = assignedNumbers[refId];
+            el.innerHTML = '<a href="#ref-' + refId + '">[' + citeNum + ']</a>';
+        });
+    }
 });
