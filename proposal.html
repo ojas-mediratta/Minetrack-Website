@@ -27,22 +27,18 @@
                 <h2>Introduction & Background</h2>
 
                 <p>
-                    Estimating motion from visual input is a central problem in robotics and computer vision. Visual Odometry (VO) recovers 3D poses from a sequence of camera frames. Reliable VO is critical for successful robot autonomy.
+                    Visual Odometry (VO) is the task of estimating an agent's trajectory from a sequence of images by predicting the relative motion between consecutive frames and composing these transformations over time. Accurate VO is fundamental to robotics and autonomous systems, enabling navigation, localization, and state estimation without external positioning infrastructure.
                 </p>
 
+                <h4>In the Literature</h4>
                 <p>
-                    Traditional VO pipelines rely on feature detection and geometric optimization, and are sensitive to visual repetition and lighting changes <span class="cite" data-ref="scaramuzza2011"></span>. More recent reviews emphasize learning methods more robust to scale and lighting shifts <span class="cite" data-ref="moratuwage2016"></span>, <span class="cite" data-ref="monocularsurvey2023"></span>.
+                    Classical VO pipelines typically rely on feature detection and matching, and geometric optimization, and are commonly categorized as feature-based or appearance-based methods <span class="cite" data-ref="scaramuzza2011"></span>. While effective, these approaches are prone to drift accumulation and sensitivity to visual ambiguity, particularly in texture-poor or repetitive environments. A recent survey highlights a shift toward learning-based methods that replace hand-engineered features with neural representations, especially in monocular settings where scale and depth ambiguities remain significant challenges <span class="cite" data-ref="moratuwage2016"></span>, <span class="cite" data-ref="monocularsurvey2023"></span>.
                 </p>
 
+                <h4>The Dataset</h4>
                 <p>
-                    We propose MineTrack, a learning-based visual odometry framework implemented for Minecraft. Minecraft provides a procedurally-generated 3D world, enabling reproducible experimentation without significant noise. Using a custom mod, we log ground-trugh Minecraft frames and transforms. Our dataset consists of recorded gameplay and trajectories at fixed resolution.
+                    To investigate learning-based VO in a controlled and reproducible setting, we introduce MineTrack, a visual odometry dataset and framework built in Minecraft. Using a custom logging mod, we record each frame as an RGB image paired with a time-synchronized 4&times;4 homogeneous transformation matrix representing the player's pose in the world coordinate frame. From these poses, we compute ground-truth relative transformation matrices between consecutive frames. Data collection includes structured motion sequences straight-line translation, in-place rotation, elevation changes, and curved trajectories across forests, plains, villages, caves, and varied terrain. The dataset is still being collected.
                 </p>
-
-                <p>
-                    MineTrack adopts a modular approach: unsupervised models (autoencoders) learn compact visual embeddings, passed to a supervised network that predicts relative motion between frames. By decoupling representation learning from pose regression, we evaluate whether unsupervised embeddings capture sufficient geometric structure for accurate trajectory reconstruction. Predicted transformations are composed and compared to ground truth to measure drift and trajectory error.
-                </p>
-
-               
 
             </section>
 

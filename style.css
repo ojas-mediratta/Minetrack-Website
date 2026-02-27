@@ -161,20 +161,7 @@ body {
     margin-top: 1.75rem;
     margin-bottom: 0.8rem;
     font-weight: 600;
-    font-size: 1.05rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.content-panel h4::before {
-    content: '';
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    background-color: var(--green-medium);
-    border-radius: 50%;
-    flex-shrink: 0;
+    font-size: 1.2rem;
 }
 
 .content-panel p {
