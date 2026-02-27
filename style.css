@@ -444,6 +444,15 @@ main {
     z-index: 1;
     color: white;
     text-align: center;
+    width: 100%;
+}
+
+.showcase-gif {
+    width: 100%;
+    border-radius: var(--radius-lg);
+    display: block;
+    object-fit: cover;
+    box-shadow: var(--shadow-lg);
 }
 
 .plot-placeholder {
