@@ -1,5 +1,7 @@
 # MineTrack - CS 7641 Machine Learning Project
 
+[Project Source Code](https://github.gatech.edu/omediratta3/MineTrack)
+
 ## Quick Start for Team Members
 
 ### 1. Clone & Setup
