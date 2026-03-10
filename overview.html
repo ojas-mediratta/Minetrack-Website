@@ -11,241 +11,183 @@
 
     <nav>
         <div class="container">
+            <a href="index.html" class="nav-brand">MineTrack</a>
             <ul>
                 <li><a href="index.html">Home</a></li>
                 <li><a href="overview.html" class="active">Overview</a></li>
-                <li><a href="proposal.html">Proposal</a></li>
             </ul>
         </div>
     </nav>
 
-    <main>
+  <main>
         <div class="container">
+
+            <!-- Introduction & Background Panel -->
+            <section class="content-panel fade-in">
+                <h2>Introduction & Background</h2>
+
+                <p>
+                    Visual Odometry (VO) is the task of estimating an agent's trajectory from a sequence of images by predicting the relative motion between consecutive frames and composing these transformations over time. Accurate VO is fundamental to robotics and autonomous systems, enabling navigation, localization, and state estimation without external positioning infrastructure.
+                </p>
+
+                <h4>In the Literature</h4>
+                <p>
+                    Classical VO pipelines typically rely on feature detection and matching, and geometric optimization, and are commonly categorized as feature-based or appearance-based methods <span class="cite" data-ref="scaramuzza2011"></span>. While effective, these approaches are prone to drift accumulation and sensitivity to visual ambiguity, particularly in texture-poor or repetitive environments. A recent survey highlights a shift toward learning-based methods that replace hand-engineered features with neural representations, especially in monocular settings where scale and depth ambiguities remain significant challenges <span class="cite" data-ref="moratuwage2016"></span>, <span class="cite" data-ref="monocularsurvey2023"></span>.
+                </p>
+
+                <h4>The Dataset</h4>
+                <p>
+                    To investigate learning-based VO in a controlled and reproducible setting, we introduce MineTrack, a visual odometry dataset and framework built in Minecraft. Using a custom logging mod, we record each frame as an RGB image paired with a time-synchronized 4&times;4 homogeneous transformation matrix representing the player's pose in the world coordinate frame. From these poses, we compute ground-truth relative transformation matrices between consecutive frames. Data collection includes structured motion sequences straight-line translation, in-place rotation, elevation changes, and curved trajectories across forests, plains, villages, caves, and varied terrain. The dataset is still being collected.
+                </p>
+
+            </section>
+
+            <!-- Problem Definition Panel -->
+            <section class="content-panel fade-in">
+                <h2>Problem Definition</h2>
+            <p>
+              Reliable motion estimation from visual input is a core requirement for autonomous navigation. Visual Odometry estimates trajectory by estimating consecutive transforms between camera poses. MineTrack tackles learning-based visual odometry in a controlled 3D environment. Given two consecutive RGB frames from Minecraft, we aim to predict the relative motion of the agent between frames (translation and rotation). By composing predicted frame-to-frame transforms over time, we reconstruct the full trajectory and measure drift versus ground truth.
+            </p>
             
-            <!-- Introduction Panel -->
-            <section class="content-panel">
-                <h2>Introduction & Problem Definition</h2>
-                
-                <h4>Project Overview</h4>
-                <p>
-                    [Provide a comprehensive introduction to your MineTrack project. Explain what the project aims to accomplish and why it's important in the context of machine learning.]
-                </p>
-
-                <h4>Problem Statement</h4>
-                <p>
-                    [Clearly define the problem you're trying to solve. What specific challenge or question are you addressing with machine learning techniques?]
-                </p>
-
-                <h4>Objectives</h4>
-                <ul>
-                    <li>[Primary objective 1]</li>
-                    <li>[Primary objective 2]</li>
-                    <li>[Primary objective 3]</li>
-                </ul>
-            </section>
-
-            <!-- Background Panel -->
-            <section class="content-panel">
-                <h2>Background & Related Work</h2>
-                
-                <h4>Domain Background</h4>
-                <p>
-                    [Provide background information about the domain or field your project operates in. What context is necessary to understand your work?]
-                </p>
-
-                <h4>Related Work</h4>
-                <p>
-                    [Discuss existing research and approaches related to your problem. What have others done in this area?]
-                </p>
-
-                <h4>Literature Review</h4>
-                <p>
-                    [Summarize key papers and methodologies that inform your approach.]
-                </p>
-
-                <h4>Gap Analysis</h4>
-                <p>
-                    [Identify gaps in existing work that your project aims to address. What makes your approach different or novel?]
-                </p>
-            </section>
-
-            <!-- Dataset Panel -->
-            <section class="content-panel">
-                <h2>Dataset & Data Collection</h2>
-                
-                <h4>Data Sources</h4>
-                <p>
-                    [Describe where your data comes from. What are the original sources of your dataset?]
-                </p>
-
-                <h4>Dataset Characteristics</h4>
-                <div class="data-stats">
-                    <table>
-                        <tr>
-                            <th>Characteristic</th>
-                            <th>Value</th>
-                        </tr>
-                        <tr>
-                            <td>Number of Samples</td>
-                            <td>[Number of rows/instances]</td>
-                        </tr>
-                        <tr>
-                            <td>Number of Features</td>
-                            <td>[Number of columns/attributes]</td>
-                        </tr>
-                        <tr>
-                            <td>Data Types</td>
-                            <td>[Numerical, categorical, text, etc.]</td>
-                        </tr>
-                        <tr>
-                            <td>Time Period</td>
-                            <td>[When was the data collected]</td>
-                        </tr>
-                    </table>
-                </div>
-
-                <h4>Data Preprocessing</h4>
-                <p>
-                    [Describe your data cleaning and preprocessing pipeline. What steps are taken to prepare the data for machine learning?]
-                </p>
-
-                <h4>Feature Engineering</h4>
-                <p>
-                    [Explain how you select, transform, or create features for your model. What features are most important for your problem?]
-                </p>
+            <h4>Research Question</h4>
+            <p>
+              Do self-supervised visual embeddings learn geometry features that improve downstream relative pose regression and reduce trajectory drift?
+            </p>
+            
+            <h4>Objectives</h4>
+            <ul>
+              <li>Learn compact visual embeddings from played minecraft frames </li>
+              <li>Predict frame to frame motion and translate to trajectories</li>
+              <li>Evaluate trajectory accuracy and drift vs ground truth across varied environments</li>
+            </ul>
+            
+            <h4>Scope </h4>
+            <p>
+               Monocular RGB visual odometry in Minecraft with frame-to-frame pose regression and trajectory reconstruction via transform composition.
+            </p>
+            
+            <h4>Motivation</h4>
+            <p>
+              Minecraft provides easier data collection and a more constrained environment than the real world, allowing for easier model development and testing. Models validated in Minecraft can be transferred to photorealistic simulators with more realistic physics engines and sensor modules, with the ultimate goal being SLAM in real-world environments.
+            </p>
             </section>
 
             <!-- Methods Panel -->
-            <section class="content-panel">
-                <h2>Methodology & Implementation</h2>
-                
+            <section class="content-panel fade-in">
+                <h2>Methods</h2>
+
                 <h4>Approach Overview</h4>
                 <p>
-                    [Provide a high-level overview of your machine learning approach. What type of problem is this and what general strategy are you using?]
+                    We solve VO as a regression of
+                    image-to-image transforms between RGB input images.
+                    We propose a two-stage encoder-regressor model to produce vector embeddings from input images
+                    and transform outputs from embeddings.
                 </p>
 
                 <h4>Machine Learning Algorithms</h4>
                 <p>
-                    [Detail the specific algorithms you're using or comparing. Why did you choose these approaches?]
+                    CNN encoders are well-studied and effective for odometry
+                    <span class="cite" data-ref="wang2018"></span>.
+                    The first stage is a CNN encoder trained as an autoencoder with self-supervision.
+                    The second stage uses an MLP to take two embedding vectors from each sequential pair of images and estimate a 3D transform between them,
+                    or an RNN ingesting a series of embedding vectors and using its own state to produce a series of output transforms.
+                    Vision transformers (ViTs) are also a strong candidate due to their sequential image handling
+                    <span class="cite" data-ref="endtoend2025"></span>.
+                    Therefore, we also propose a ViT as an alternative to the encoder-regressor pipeline,
+                    using image patch embedding and a transformer encoder with pose regression head for output.
                 </p>
 
-                <h4>Model Architecture</h4>
+                <h4>Evaluation Strategy</h4>
                 <p>
-                    [If applicable, describe your model architecture, hyperparameters, or network structure.]
-                </p>
-
-                <h4>Training Methodology</h4>
-                <p>
-                    [Explain your training procedure, evaluation metrics, and validation strategy.]
+                    We propose the following Visual Odometry metrics to compare the performance of our various models:
+                    Absolute Trajectory Error (ATE) which measures absolute RMS error across the whole trajectory
+                    <span class="cite" data-ref="pose"></span>,
+                    Relative Pose Error (RPE)
+                    which measures local RMS transform accuracy,
+                    <span class="cite" data-ref="pose"></span>,
+                    and Translation/Rotation error using the KITTI standard
+                    <span class="cite" data-ref="kitti"></span>.
                 </p>
 
                 <h4>Implementation Stack</h4>
                 <ul>
-                    <li><strong>Programming Language:</strong> [e.g., Python]</li>
-                    <li><strong>ML Libraries:</strong> [e.g., scikit-learn, TensorFlow, PyTorch]</li>
-                    <li><strong>Data Processing:</strong> [e.g., pandas, NumPy]</li>
-                    <li><strong>Visualization:</strong> [e.g., matplotlib, seaborn]</li>
+                    <li><strong>Programming Language:</strong> Python for learning, Java for data collection Minecraft mod</li>
+                    <li><strong>ML Libraries:</strong> PyTorch </li>
+                    <li><strong>Data Processing:</strong> NumPy, Python Image Library (PIL), OpenCV</li>
+                    <li><strong>Visualization:</strong> MatPlotLib</li>
                 </ul>
             </section>
 
-            <!-- Results Panel -->
-            <section class="content-panel">
-                <h2>Results & Analysis</h2>
-                
-                <h4>Performance Overview</h4>
+            <!-- Potential Dataset Panel -->
+            <section class="content-panel fade-in">
+                <h2>Potential Dataset</h2>
+
+                <h4>Data Sources</h4>
                 <p>
-                    [Provide a high-level summary of your model's performance and key findings.]
+                    Our dataset will come from our custom Minecraft mod, which captures frames and associated pose
+                    data from standard Minecraft gameplay.
+                    With a few hours of gameplay per team member we will have access
+                    to a dataset with millions of labelled images.
+                    To ensure adaptability across different biomes in Minecraft worlds
+                    we will target a minimum of 20 minutes of unique gameplay per biome.
                 </p>
 
-                <h4>Quantitative Results</h4>
-                <div class="results-table">
-                    <table>
-                        <tr>
-                            <th>Model/Algorithm</th>
-                            <th>Accuracy</th>
-                            <th>Precision</th>
-                            <th>Recall</th>
-                            <th>F1-Score</th>
-                        </tr>
-                        <tr>
-                            <td>[Algorithm 1]</td>
-                            <td>[Value]</td>
-                            <td>[Value]</td>
-                            <td>[Value]</td>
-                            <td>[Value]</td>
-                        </tr>
-                        <tr>
-                            <td>[Algorithm 2]</td>
-                            <td>[Value]</td>
-                            <td>[Value]</td>
-                            <td>[Value]</td>
-                            <td>[Value]</td>
-                        </tr>
-                    </table>
-                </div>
-
-                <h4>Key Findings</h4>
+                <h4>Data Preprocessing Plan</h4>
                 <p>
-                    [Summarize your most important discoveries and insights from the analysis.]
+                    We will use the data collection mod to crop and scale the original rendered Minecraft frames to 256x256 square.
+                    Additionally, we will experiment with data augmentation by modulation of scene
+                    brightenss and contrast and introduction of random noise to decrease the brittleness
+                    of the vision encoder.
                 </p>
-
-                <h4>Model Comparison</h4>
-                <p>
-                    [Compare different approaches you tested. Which performed best and why?]
-                </p>
-
-                <h4>Visualizations</h4>
-                <p>
-                    [Include space for your key visualizations such as learning curves, confusion matrices, feature importance plots, etc.]
-                </p>
-                <div class="visualization-placeholder">
-                    <p><em>Add your research visualizations here</em></p>
-                </div>
             </section>
 
-            <!-- Discussion Panel -->
-            <section class="content-panel">
-                <h2>Discussion & Future Work</h2>
-                
-                <h4>Interpretation of Results</h4>
+            <!-- Potential Results & Discussion Panel -->
+            <section class="content-panel fade-in">
+                <h2>Potential Results & Discussion</h2>
+
+                <h4>Expected Outcomes</h4>
                 <p>
-                    [Interpret your results in the context of your original problem and objectives. What do the findings mean?]
+                    We anticipate our model will accurately and robustly track player motion
+                    in Minecraft from rendered video with moderate resource usage.
                 </p>
 
-                <h4>Strengths and Limitations</h4>
-                <div class="strengths-limitations">
-                    <div class="strength-section">
-                        <h5>Strengths</h5>
-                        <ul>
-                            <li>[Strength 1]</li>
-                            <li>[Strength 2]</li>
-                            <li>[Strength 3]</li>
-                        </ul>
-                    </div>
-                    <div class="limitation-section">
-                        <h5>Limitations</h5>
-                        <ul>
-                            <li>[Limitation 1]</li>
-                            <li>[Limitation 2]</li>
-                            <li>[Limitation 3]</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <h4>Future Directions</h4>
+                <h4>Anticipated Performance Metrics</h4>
                 <p>
-                    [Suggest directions for future research or improvements:]
+                    Based on the benchmarks for learning-based methods on the KITTI Dataset from
+                    <span class="cite" data-ref="kitti"></span>,
+                    we anticipate achieving a relative translation error and rotation error
+                    &le; 10% and &le; 10&deg; respectively for roughly KITTI-length visual odometry sequences.
                 </p>
-                <ul>
-                    <li>[Future direction 1]</li>
-                    <li>[Future direction 2]</li>
-                    <li>[Future direction 3]</li>
-                </ul>
 
-                <h4>Conclusions</h4>
+                <h4>Potential Impact</h4>
                 <p>
-                    [Summarize your main conclusions and the contribution of your work to the field.]
+                    Algorithms developed in MineTrack could be adapted to track robot motion in the real world
+                    with less energy and compute use than current-gen models, reducing resource usage.
                 </p>
+            </section>
+            <section class="content-panel fade-in">
+              <h2>Awards</h2>
+                <p>We opt in to the "Outstanding Project" award contest.</p>
+            </section>
+
+            <section class="content-panel fade-in">
+                <h2>Gantt Chart</h2>
+                <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vSwMRUYYZHdZFkT4o_maTiItvI8GCN0Fj8evmmvVcnEWApAuN-rOlwJ7V2wSFuOag/pubhtml?gid=1511207567&amp;single=true&amp;headers=false&amp;chrome=false&amp;widget=false"
+                style="width: 100%; height: 500px">
+                </iframe>
+            </section>
+
+            <section class="content-panel fade-in">
+                <h2>Contribution Table</h2>
+                <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRvOF2WKPEOyOUuTDDgSeGbIw96JE5M8ZzlW-sfCej8hOEcK6tyabCRgvnmn-oqPida8Oj5KZMi8A2q/pubhtml?gid=0&single=true&amp;chrome=false&amp;widget=false"
+                style="width: 100%; height: 450px">
+                </iframe>
+            </section>
+
+            <section class="content-panel fade-in">
+                <h2>References</h2>
+                <ul id="bibliography-list" class="references-list">
+                    </ul>
             </section>
 
         </div>
