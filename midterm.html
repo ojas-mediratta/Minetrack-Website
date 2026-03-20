@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Midterm Report - MineTrack</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+
+    <nav>
+        <div class="container">
+            <a href="index.html" class="nav-brand">MineTrack</a>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="midterm.html" class="active">Midterm Report</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+
+            <!-- Introduction & Background Panel -->
+            <section class="content-panel fade-in">
+                <h2>Introduction & Background</h2>
+
+                <p>
+                    Visual Odometry (VO) is the task of estimating an agent's trajectory from a sequence of images by predicting the relative motion between consecutive frames and composing these transformations over time. Accurate VO is fundamental to robotics and autonomous systems, enabling navigation, localization, and state estimation without external positioning infrastructure.
+                </p>
+
+                <h4>In the Literature</h4>
+                <p>
+                    Classical VO pipelines typically rely on feature detection and matching, and geometric optimization, and are commonly categorized as feature-based or appearance-based methods <span class="cite" data-ref="scaramuzza2011"></span>. While effective, these approaches are prone to drift accumulation and sensitivity to visual ambiguity, particularly in texture-poor or repetitive environments. A recent survey highlights a shift toward learning-based methods that replace hand-engineered features with neural representations, especially in monocular settings where scale and depth ambiguities remain significant challenges <span class="cite" data-ref="moratuwage2016"></span>, <span class="cite" data-ref="monocularsurvey2023"></span>.
+                </p>
+
+                <h4>The Dataset</h4>
+                <p>
+                    To investigate learning-based VO in a controlled and reproducible setting, we introduce MineTrack, a visual odometry dataset and framework built in Minecraft. Using a custom logging mod, we record each frame as an RGB image paired with a time-synchronized 4&times;4 homogeneous transformation matrix representing the player's pose in the world coordinate frame. From these poses, we compute ground-truth relative transformation matrices between consecutive frames. Data collection includes structured motion sequences such as straight-line translation, in-place rotation, elevation changes, and curved trajectories across forests, plains, villages, caves, and varied terrain. Dataset collection and organization are ongoing, and the current midterm checkpoint focuses on validating the learning pipeline on the data gathered so far.
+                </p>
+            </section>
+
+            <!-- Problem Definition Panel -->
+            <section class="content-panel fade-in">
+                <h2>Problem Definition</h2>
+                <p>
+                    Reliable motion estimation from visual input is a core requirement for autonomous navigation. Visual Odometry estimates trajectory by estimating consecutive transforms between camera poses. MineTrack tackles learning-based visual odometry in a controlled 3D environment. Given two consecutive RGB frames from Minecraft, we aim to predict the relative motion of the agent between frames (translation and rotation). By composing predicted frame-to-frame transforms over time, we reconstruct the full trajectory and measure drift versus ground truth.
+                </p>
+
+                <h4>Research Question</h4>
+                <p>
+                    Do self-supervised visual embeddings learn geometry-relevant features that improve downstream relative pose regression and reduce trajectory drift?
+                </p>
+
+                <h4>Objectives</h4>
+                <ul>
+                    <li>Learn compact visual embeddings from Minecraft gameplay frames</li>
+                    <li>Predict frame-to-frame motion and compose predictions into trajectories</li>
+                    <li>Evaluate trajectory accuracy and drift versus ground truth across varied environments</li>
+                </ul>
+
+                <h4>Scope</h4>
+                <p>
+                    Monocular RGB visual odometry in Minecraft with frame-to-frame pose regression and trajectory reconstruction via transform composition.
+                </p>
+
+                <h4>Motivation</h4>
+                <p>
+                    Minecraft provides easier data collection and a more constrained environment than the real world, allowing for easier model development and testing. Models validated in Minecraft can later be transferred to photorealistic simulators with more realistic physics engines and sensor modules, with the ultimate goal being SLAM in real-world environments.
+                </p>
+            </section>
+
+            <!-- Methods Panel -->
+            <section class="content-panel fade-in">
+                <h2>Methods</h2>
+
+                <h4>Implemented Solution Overview</h4>
+                <p>
+                    At the midterm checkpoint, we have implemented a learning-based visual odometry pipeline centered around self-supervised visual representation learning and supervised pose regression. Our approach uses autoencoder-based models to compress Minecraft image data into lower-dimensional latent vectors, followed by an MLP regressor that predicts frame-to-frame motion from those learned features. We have implemented and tested both a single-image autoencoder and a dual-image autoencoder, and we use the learned encoder outputs as compact feature representations for downstream transform prediction.
+                </p>
+
+                <h4>Data Processing Methods</h4>
+                <p>
+                    Our dataset is generated from logged Minecraft gameplay. Each captured RGB frame is paired with a synchronized 4&times;4 homogeneous pose matrix representing the player pose in world coordinates. During preprocessing, frames are organized into temporally adjacent pairs, and the relative transform between frame <em>n</em> and frame <em>n+1</em> is computed from the corresponding pose matrices. These relative transforms are then converted into a regression target consisting of 6D rotation and 3D translation.
+                </p>
+                <p>
+                    This preprocessing pipeline was selected because the visual odometry task is naturally defined in terms of motion between consecutive frames. Pairing adjacent images with their relative transforms provides direct supervision for pose regression, while also supporting self-supervised pretraining of the encoder on the image data itself. This makes it possible to train the visual feature extractor without manual labels and then reuse the learned encoder in the downstream motion estimation model.
+                </p>
+
+                <h4>Single-Image Autoencoder</h4>
+                <p>
+                    Our first implemented representation-learning model is a single-image autoencoder. This model takes a single Minecraft image as input, compresses it into a constrained latent feature vector, and attempts to reconstruct the same image from that vector. The latent embedding is designed to be much lower-dimensional than the raw image input, reducing hundreds of thousands of pixel values to a more manageable representation for later models to process.
+                </p>
+                <p>
+                    We selected this model because it provides an efficient way to reduce input dimensionality while learning information-dense visual features in a self-supervised manner. The encoder portion of the model is integrated into the broader visual odometry pipeline as the image-processing front end. This also gives us a clean baseline for evaluating whether reconstruction-trained embeddings preserve enough geometry-relevant information for downstream transform regression.
+                </p>
+
+                <h4>Dual Autoencoder</h4>
+                <p>
+                    We also implemented a second-generation dual autoencoder designed to better capture motion-relevant information between consecutive frames. Instead of taking only one image, this model ingests two sequential frames. It compresses the pair into a latent vector of a few thousand dimensions and is trained to reconstruct both the first image and a difference image representing changes between the first and second frames.
+                </p>
+                <p>
+                    This architecture was selected because it encourages the latent representation to encode not only scene content, but also incremental changes between neighboring images. By learning to reconstruct both the original image and the image-to-image difference, the encoder is pushed to relate features in one frame to features in the next, which is directly relevant to motion tracking. Like the single-image autoencoder, this is a self-supervised learning method that allows us to pretrain the encoder efficiently on the available image data.
+                </p>
+                <p>
+                    Compared with the single-image autoencoder, the dual autoencoder produces a joint representation from both frames in one pass. In principle, this can simplify downstream inference, since the MLP regressor only needs one latent vector per frame pair. However, the single-image autoencoder remains competitive from a compute perspective because its encoded vectors can be reused across overlapping MLP inputs, where the second embedding from one frame pair becomes the first embedding for the next.
+                </p>
+
+                <h4>MLP Transform Regressor</h4>
+                <p>
+                    For downstream motion estimation, we implemented an MLP-based transform regressor. In the current pipeline, the MLP ingests the latent vector produced by the dual autoencoder and outputs a relative motion estimate between the two input frames. The regression target is parameterized as 6D rotation and 3D translation.
+                </p>
+                <p>
+                    The training script constructs these targets by taking frames <em>n</em> and <em>n+1</em>, computing their relative transform from the logged pose data, and training the MLP head to regress that transform. We selected an MLP for this stage because it provides a simple and interpretable baseline for testing whether the learned latent representation contains enough information to support pose estimation. This lets us evaluate the usefulness of the encoder features before moving to more complex temporal or sequence-based models.
+                </p>
+
+                <h4>Why These Methods Were Selected</h4>
+                <p>
+                    The implemented methods were chosen to balance feasibility, interpretability, and relevance to the project goal. Autoencoders provide a practical self-supervised way to compress high-dimensional image data into compact latent features, which is important because raw RGB frames are too large to feed directly into a lightweight regression model. The single-image autoencoder serves as a baseline dimensionality-reduction method, while the dual autoencoder is intended to make motion-related changes more explicit in the representation. The MLP regressor was chosen as a simple supervised model that can test whether these learned latent vectors are informative enough for relative pose prediction.
+                </p>
+
+                <h4>Current Implementation Status</h4>
+                <p>
+                    At this stage, we have implemented the Minecraft data preprocessing pipeline, the single-image autoencoder, the dual autoencoder, and the MLP transform regressor. We have trained these models on collected data and generated preliminary reconstruction examples, loss curves, and pose-related error visualizations. These experiments provide an initial checkpoint on both the quality of the learned image representations and the feasibility of downstream transform regression using latent features.
+                </p>
+
+                <h4>Evaluation Strategy</h4>
+                <p>
+                    For the midterm checkpoint, we evaluate the implemented models using both qualitative and quantitative results. Reconstruction figures are used to assess whether the autoencoders preserve meaningful visual content and frame-to-frame differences. Training loss curves are used to measure convergence during encoder and regressor training. For the downstream transform regressor, we evaluate performance using transformation and rotation error plots derived from predicted relative motion versus ground truth. Together, these results help us determine whether the learned latent vectors are useful for visual odometry and where the current pipeline still needs improvement.
+                </p>
+
+                <h4>Implementation Stack</h4>
+                <ul>
+                    <li><strong>Programming Language:</strong> Python for model training and evaluation, Java for the Minecraft data collection mod</li>
+                    <li><strong>ML Libraries:</strong> PyTorch</li>
+                    <li><strong>Data Processing:</strong> NumPy, PIL, OpenCV</li>
+                    <li><strong>Visualization:</strong> Matplotlib</li>
+                </ul>
+            </section>
+
+            <!-- Results & Discussion Panel -->
+            <section class="content-panel fade-in">
+                <h2>Results & Discussion</h2>
+
+                <h4>Summary of Current Results</h4>
+                <p>
+                    At the midterm checkpoint, we have obtained preliminary results for both of our self-supervised encoder designs and for the downstream transform regression pipeline. In particular, we have generated reconstruction outputs for the autoencoder models, training loss curves for both the autoencoder and MLP stages, and transform-related error visualizations for the dual-autoencoder-based regression pipeline. These results allow us to evaluate whether the encoder is learning compact and meaningful visual representations, and whether those representations are useful for regressing relative motion between frames.
+                </p>
+
+                <h4>Autoencoder Reconstruction Results</h4>
+                <p>
+                    Reconstruction outputs provide a qualitative measure of how much useful visual information is preserved in the learned latent space. For the single-image autoencoder, successful reconstruction indicates that the model is learning a compact representation of scene appearance from a single Minecraft frame. For the dual autoencoder, reconstruction quality is even more informative, since the model must encode enough information to reconstruct both the first image and the image difference between the first and second frames. This makes the dual reconstruction task more aligned with the visual odometry objective, since the model is encouraged to represent both scene structure and frame-to-frame change.
+                </p>
+                <p>
+                    In practice, the autoencoders were significantly easier to train than the downstream MLP regressor. With straightforward hyperparameters, the autoencoder models produced strong results after roughly 10-20 epochs, suggesting that the self-supervised reconstruction objective is effective for learning compressed image representations from the Minecraft data. This made the autoencoder stage a reliable starting point for pretraining the encoder component of the full pipeline.
+                </p>
+
+                <!-- AUTOENCODER RECONSTRUCTION RESULTS -->
+                <figure class="figure-pair-block">
+                    <div class="figure-pair-grid">
+                        <img src="media/images/midterm-report-figures/aaron/encoder_visualization.png" alt="Autoencoder reconstruction figure 1">
+                        <img src="media/images/midterm-report-figures/aaron/encoder_visualization2.png" alt="Autoencoder reconstruction figure 2">
+                    </div>
+                    <figcaption>
+                        Top left: image n. Top right: image n+1. Bottom left: reconstructed image n. Bottom right: reconstructed image difference.
+                    </figcaption>
+                </figure>
+
+                <h4>Training Loss Results</h4>
+                <p>
+                    We use training loss curves to evaluate convergence behavior for both the autoencoder stage and the downstream MLP regressor. The autoencoder loss plots show whether the encoder-decoder model is improving its ability to reconstruct image content over time. The MLP loss plots show whether the latent features produced by the encoder are useful enough for supervised transform regression. We have collected these plots across multiple training runs, including experiments performed on RTX 5070 and RTX 3070 GPUs, which also provides some practical insight into training stability and runtime behavior across hardware setups.
+                </p>
+                <p>
+                    The loss curves also highlight an important difference between stages of the pipeline. While the autoencoders trained relatively smoothly with straightforward settings, the MLP regressor required substantially more effort to obtain useful behavior. Early versions of the regressor frequently converged to a degenerate solution in which the model predicted an identity transform rather than the desired nonzero relative motion. Although reducing the learning rate helped limit this collapse somewhat, the resulting training behavior was still unsatisfactory and did not produce strong transform predictions.
+                </p>
+
+                <!-- AUTOENCODER TRAINING LOSS -->
+                <figure class="figure-pair-block">
+                    <div class="figure-pair-grid">
+                        <img src="media/images/midterm-report-figures/ojas/autoencoder_loss.png" alt="Autoencoder loss on RTX 5070 (run 1)">
+                        <img src="media/images/midterm-report-figures/ojas/autoencoder_loss2.png" alt="Autoencoder loss on RTX 5070 (run 2)">
+                    </div>
+                    <figcaption>
+                        Autoencoder training loss for the dual autoencoder model on an RTX 5070 GPU.
+                    </figcaption>
+                </figure>
+
+                <!-- MLP TRAINING LOSS -->
+                <div class="figure-block">
+                    <img src="media\images\midterm-report-figures\ojas\encodermlp_loss.png" alt="MLP training loss on RTX 5070" style="width: 50%; max-width: 900px; display: block; margin: 0 auto;">
+                    <p style="text-align: center; font-style: italic; margin-top: 0.5rem;">
+                        MLP training loss for the downstream pose regressor on an RTX 5070 GPU.
+                    </p>
+                </div>
+
+                <!-- RTX 3070 TRAINING LOSS -->
+                <div class="figure-pair-grid figure-pair-separate-captions">
+                    <figure class="figure-cell">
+                        <img src="media/images/midterm-report-figures/isaac/autoencoder_loss.png" alt="Encoder loss on RTX 3070">
+                        <figcaption>
+                            Encoder training loss for the dual autoencoder model on an RTX 3070 GPU.
+                        </figcaption>
+                    </figure>
+                    <figure class="figure-cell">
+                        <img src="media/images/midterm-report-figures/isaac/encodermlp_loss.png" alt="MLP loss on RTX 3070">
+                        <figcaption>
+                            MLP training loss for the downstream pose regressor on an RTX 3070 GPU.
+                        </figcaption>
+                    </figure>
+                </div>
+
+                <h4>Pose Prediction Performance</h4>
+                <p>
+                    For the dual autoencoder pipeline, we also evaluate downstream transform prediction more directly using transformation and rotation error plots. These metrics indicate how accurately the MLP regressor can recover the relative motion between frames from the latent representation produced by the encoder. Low error suggests that the latent vector preserves motion-relevant information, while high or unstable error suggests that the representation may be losing geometric detail, that the regressor may be too limited, or that additional preprocessing and target reformulation may be needed.
+                </p>
+                <p>
+                    To address the identity-transform failure mode, we modified the loss function by adding a term that penalizes differences in magnitude between the predicted and ground-truth location transforms. This discouraged the model from collapsing to identity outputs and made training much more effective. After introducing this loss term, we were able to increase the learning rate from 1e-4 to 1e-3 without returning to the same degenerate behavior. This change produced more meaningful transform predictions and improved the usefulness of the MLP training stage.
+                </p>
+
+                <!-- RTX 3070 ERROR PLOTS -->
+                <div class="figure-pair-grid figure-pair-separate-captions">
+                    <figure class="figure-cell">
+                        <img src="media/images/midterm-report-figures/isaac/transformation_error.png" alt="Transformation error on RTX 3070">
+                        <figcaption>
+                            Transformation error for the dual autoencoder + MLP pipeline on an RTX 3070 GPU.
+                        </figcaption>
+                    </figure>
+                    <figure class="figure-cell">
+                        <img src="media/images/midterm-report-figures/isaac/rotation_error.png" alt="Rotation error on RTX 3070">
+                        <figcaption>
+                            Rotation error for the dual autoencoder + MLP pipeline on an RTX 3070 GPU.
+                        </figcaption>
+                    </figure>
+                </div>
+
+                <!-- TRAJECTORY AND YAW COMPARISON -->
+                <div class="figure-block">
+                    <img src="media\images\midterm-report-figures\aaron\topdown_yaw.png" alt="Top-down trajectory and yaw angle over time: estimated versus ground truth" style="width: 75%; max-width: 900px; display: block; margin: 0 auto;">
+                    <p style="text-align: center; font-style: italic; margin-top: 0.5rem;">
+                        Top-down trajectory (X-Z) and yaw angle over time, comparing estimated motion to ground truth.
+                    </p>
+                </div>
+
+                
+
+                <h4>Interpretation of Results</h4>
+                <p>
+                    Overall, the current results suggest that the implemented pipeline is functioning and learning nontrivial structure from the data. The reconstruction outputs indicate that the encoder is not collapsing and is preserving useful visual information. The training loss curves show that self-supervised pretraining is relatively stable, while the downstream regression problem is more sensitive and requires more careful design. The transform and rotation error plots are therefore especially important, since they reflect whether the learned latent representations are actually useful for visual odometry rather than only for image reconstruction.
+                </p>
+
+                <h4>Why Performance May Be Strong or Weak</h4>
+                <p>
+                    Several factors likely affect current performance. The single-image autoencoder is useful for dimensionality reduction, but because it reconstructs only one frame, it may not explicitly encourage the latent space to encode motion-sensitive information. The dual autoencoder is designed to address this by incorporating both image content and frame-to-frame difference into the pretraining objective, which may produce a more odometry-relevant representation. However, this added complexity may also make training more difficult. In addition, the MLP regressor is intentionally simple, which makes it a good baseline but may limit how well it can model more subtle relationships between latent features and motion parameters.
+                </p>
+                <p>
+                    The identity-transform collapse observed during MLP training also suggests that the downstream task is more difficult than image reconstruction alone. In particular, a model can minimize part of the regression objective by predicting little or no movement if the loss function does not sufficiently penalize incorrect transform magnitude. This explains why the loss-function modification was necessary: it better aligned optimization behavior with the actual motion-estimation objective.
+                </p>
+
+                <h4>Planned Improvements</h4>
+                <p>
+                    Our next step is to compare the single-image and dual-autoencoder pipelines more directly and determine which latent representation is more useful for downstream pose prediction. We also plan to continue tuning latent dimensionality, reconstruction objectives, and training settings to improve representation quality. On the regression side, future work may include further refining the loss function, improving target parameterization, and trying alternative heads or sequence-aware models if the MLP baseline proves too limited. We also expect that expanding the dataset and refining preprocessing will improve the quality of both representation learning and transform estimation.
+                </p>
+            </section>
+
+            <section class="content-panel fade-in">
+                <h2>Awards</h2>
+                <p>We opt in to the "Outstanding Project" award contest.</p>
+            </section>
+
+            <section class="content-panel fade-in">
+                <h2>Gantt Chart</h2>
+                <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vSwMRUYYZHdZFkT4o_maTiItvI8GCN0Fj8evmmvVcnEWApAuN-rOlwJ7V2wSFuOag/pubhtml?gid=1511207567&amp;single=true&amp;headers=false&amp;chrome=false&amp;widget=false"
+                style="width: 100%; height: 500px">
+                </iframe>
+            </section>
+
+            <section class="content-panel fade-in">
+                <h2>Contribution Table</h2>
+                <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRvOF2WKPEOyOUuTDDgSeGbIw96JE5M8ZzlW-sfCej8hOEcK6tyabCRgvnmn-oqPida8Oj5KZMi8A2q/pubhtml?gid=0&amp;single=true&amp;chrome=false&amp;widget=false"
+                style="width: 100%; height: 450px">
+                </iframe>
+            </section>
+
+            <section class="content-panel fade-in">
+                <h2>References</h2>
+                <ul id="bibliography-list" class="references-list">
+                </ul>
+            </section>
+
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 MineTrack Project - CS 7641 Machine Learning</p>
+        </div>
+    </footer>
+</body>
+</html>
