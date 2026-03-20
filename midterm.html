@@ -145,15 +145,15 @@
 
                 <h4>Summary of Current Results</h4>
                 <p>
-                    At the midterm checkpoint, we have obtained preliminary results for both of our self-supervised encoder designs and for the downstream transform regression pipeline. In particular, we have generated reconstruction outputs for the autoencoder models, training loss curves for both the autoencoder and MLP stages, and transform-related error visualizations for the dual-autoencoder-based regression pipeline. These results allow us to evaluate whether the encoder is learning compact and meaningful visual representations, and whether those representations are useful for regressing relative motion between frames.
+                    At the midterm checkpoint, we have obtained preliminary results for our self-supervised encoder models and for the downstream transform regression pipeline. These results include reconstruction outputs, autoencoder and MLP training loss curves, transform-related error plots, and a trajectory/yaw comparison plot. Together, these provide an initial view of reconstruction quality, training behavior, and downstream motion prediction performance.
                 </p>
 
                 <h4>Autoencoder Reconstruction Results</h4>
                 <p>
-                    Reconstruction outputs provide a qualitative measure of how much useful visual information is preserved in the learned latent space. For the single-image autoencoder, successful reconstruction indicates that the model is learning a compact representation of scene appearance from a single Minecraft frame. For the dual autoencoder, reconstruction quality is even more informative, since the model must encode enough information to reconstruct both the first image and the image difference between the first and second frames. This makes the dual reconstruction task more aligned with the visual odometry objective, since the model is encouraged to represent both scene structure and frame-to-frame change.
+                    Reconstruction outputs provide a qualitative view of what information is retained in the learned latent space. For the single-image autoencoder, the model compresses one Minecraft frame and reconstructs that same frame. For the dual autoencoder, the model takes two sequential frames and reconstructs the first image together with an image difference between the first and second frames.
                 </p>
                 <p>
-                    In practice, the autoencoders were significantly easier to train than the downstream MLP regressor. With straightforward hyperparameters, the autoencoder models produced strong results after roughly 10-20 epochs, suggesting that the self-supervised reconstruction objective is effective for learning compressed image representations from the Minecraft data. This made the autoencoder stage a reliable starting point for pretraining the encoder component of the full pipeline.
+                    In practice, the autoencoders were significantly easier to train than the downstream MLP regressor. With straightforward hyperparameters, the autoencoder models produced strong results after roughly 10-20 epochs. This made the autoencoder stage much easier to train and evaluate during the current checkpoint.
                 </p>
 
                 <!-- AUTOENCODER RECONSTRUCTION RESULTS -->
@@ -169,10 +169,10 @@
 
                 <h4>Training Loss Results</h4>
                 <p>
-                    We use training loss curves to evaluate convergence behavior for both the autoencoder stage and the downstream MLP regressor. The autoencoder loss plots show whether the encoder-decoder model is improving its ability to reconstruct image content over time. The MLP loss plots show whether the latent features produced by the encoder are useful enough for supervised transform regression. We have collected these plots across multiple training runs, including experiments performed on RTX 5070 and RTX 3070 GPUs, which also provides some practical insight into training stability and runtime behavior across hardware setups.
+                    We use training loss curves to compare convergence behavior for both the autoencoder stage and the downstream MLP regressor. The autoencoder loss plots show how reconstruction loss changes during training, while the MLP loss plots show how transform regression loss changes during training. We collected these plots across multiple training runs, including experiments performed on RTX 5070 and RTX 3070 GPUs.
                 </p>
                 <p>
-                    The loss curves also highlight an important difference between stages of the pipeline. While the autoencoders trained relatively smoothly with straightforward settings, the MLP regressor required substantially more effort to obtain useful behavior. Early versions of the regressor frequently converged to a degenerate solution in which the model predicted an identity transform rather than the desired nonzero relative motion. Although reducing the learning rate helped limit this collapse somewhat, the resulting training behavior was still unsatisfactory and did not produce strong transform predictions.
+                    The loss curves also highlight an important difference between stages of the pipeline. While the autoencoders trained relatively smoothly with straightforward settings, the MLP regressor required substantially more effort to obtain useful behavior. Early versions of the regressor frequently converged to a degenerate solution in which the model predicted an identity transform rather than the desired nonzero relative motion. Although reducing the learning rate helped limit this collapse somewhat, the resulting training behavior was still unsatisfactory.
                 </p>
 
                 <!-- AUTOENCODER TRAINING LOSS -->
@@ -210,13 +210,13 @@
                     </figure>
                 </div>
 
-                <h4>Pose Prediction Performance</h4>
-                <p>
-                    For the dual autoencoder pipeline, we also evaluate downstream transform prediction more directly using transformation and rotation error plots. These metrics indicate how accurately the MLP regressor can recover the relative motion between frames from the latent representation produced by the encoder. Low error suggests that the latent vector preserves motion-relevant information, while high or unstable error suggests that the representation may be losing geometric detail, that the regressor may be too limited, or that additional preprocessing and target reformulation may be needed.
-                </p>
-                <p>
-                    To address the identity-transform failure mode, we modified the loss function by adding a term that penalizes differences in magnitude between the predicted and ground-truth location transforms. This discouraged the model from collapsing to identity outputs and made training much more effective. After introducing this loss term, we were able to increase the learning rate from 1e-4 to 1e-3 without returning to the same degenerate behavior. This change produced more meaningful transform predictions and improved the usefulness of the MLP training stage.
-                </p>
+                    <h4>Pose Prediction Performance</h4>
+                    <p>
+                        For the dual autoencoder pipeline, we also evaluate downstream transform prediction using transformation and rotation error plots. These plots compare predicted relative motion against ground truth and provide a direct view of transform regression performance.
+                    </p>
+                    <p>
+                        To address the identity-transform failure mode, we modified the loss function by adding a term that penalizes differences in magnitude between the predicted and ground-truth location transforms. This discouraged the model from collapsing to identity outputs and made training more effective. After introducing this loss term, we were able to increase the learning rate from 1e-4 to 1e-3 without returning to the same degenerate behavior.
+                    </p>
 
                 <!-- RTX 3070 ERROR PLOTS -->
                 <div class="figure-pair-grid figure-pair-separate-captions">
@@ -246,20 +246,21 @@
 
                 <h4>Interpretation of Results</h4>
                 <p>
-                    Overall, the current results suggest that the implemented pipeline is functioning and learning nontrivial structure from the data. The reconstruction outputs indicate that the encoder is not collapsing and is preserving useful visual information. The training loss curves show that self-supervised pretraining is relatively stable, while the downstream regression problem is more sensitive and requires more careful design. The transform and rotation error plots are therefore especially important, since they reflect whether the learned latent representations are actually useful for visual odometry rather than only for image reconstruction.
-                </p>
-
-                <h4>Why Performance May Be Strong or Weak</h4>
-                <p>
-                    Several factors likely affect current performance. The single-image autoencoder is useful for dimensionality reduction, but because it reconstructs only one frame, it may not explicitly encourage the latent space to encode motion-sensitive information. The dual autoencoder is designed to address this by incorporating both image content and frame-to-frame difference into the pretraining objective, which may produce a more odometry-relevant representation. However, this added complexity may also make training more difficult. In addition, the MLP regressor is intentionally simple, which makes it a good baseline but may limit how well it can model more subtle relationships between latent features and motion parameters.
+                    The current results show that the implemented pipeline can be trained end-to-end and that both reconstruction outputs and regression outputs can be generated from the collected data. The autoencoder results were easier to obtain and were more stable early in development, while the downstream regression stage required more tuning to avoid degenerate behavior. At this checkpoint, the transform and rotation error plots are the most important indicators of downstream motion prediction performance.
                 </p>
                 <p>
-                    The identity-transform collapse observed during MLP training also suggests that the downstream task is more difficult than image reconstruction alone. In particular, a model can minimize part of the regression objective by predicting little or no movement if the loss function does not sufficiently penalize incorrect transform magnitude. This explains why the loss-function modification was necessary: it better aligned optimization behavior with the actual motion-estimation objective.
+                    One likely reason for the stronger autoencoder results is that image reconstruction was easier to optimize than downstream transform regression in our current setup. The single-image autoencoder and dual autoencoder both trained successfully with relatively straightforward hyperparameters, while the MLP regressor was much more sensitive to training setup and loss design.
+                </p>
+                <p>
+                    The difference between the two autoencoder designs may also matter. The single-image autoencoder is trained only to reconstruct one frame, while the dual autoencoder is trained using two sequential frames and an image-difference target. Since the dual model includes information from two adjacent frames, it may be better suited for downstream motion estimation, though this comparison is still ongoing.
+                </p>
+                <p>
+                    For the MLP regressor, one major challenge was the identity-transform failure mode. In practice, modifying the loss function to penalize differences in transform magnitude was necessary to stop this behavior and obtain more useful training results.
                 </p>
 
                 <h4>Planned Improvements</h4>
                 <p>
-                    Our next step is to compare the single-image and dual-autoencoder pipelines more directly and determine which latent representation is more useful for downstream pose prediction. We also plan to continue tuning latent dimensionality, reconstruction objectives, and training settings to improve representation quality. On the regression side, future work may include further refining the loss function, improving target parameterization, and trying alternative heads or sequence-aware models if the MLP baseline proves too limited. We also expect that expanding the dataset and refining preprocessing will improve the quality of both representation learning and transform estimation.
+                    Our next step is to compare the single-image and dual-autoencoder pipelines more directly and determine which latent representation performs better for downstream pose prediction. We also plan to continue tuning latent dimensionality, reconstruction objectives, and training settings. On the regression side, future work may include further refining the loss function, improving target parameterization, and trying alternative downstream models if the MLP baseline remains too limited. We also plan to continue expanding the dataset and refining preprocessing.
                 </p>
             </section>
 
