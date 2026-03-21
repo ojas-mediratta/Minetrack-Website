@@ -78,13 +78,36 @@
                     At the midterm checkpoint, we have implemented a learning-based visual odometry pipeline centered around self-supervised visual representation learning and supervised pose regression. Our approach uses autoencoder-based models to compress Minecraft image data into lower-dimensional latent vectors, followed by an MLP regressor that predicts frame-to-frame motion from those learned features. We have implemented and tested both a single-image autoencoder and a dual-image autoencoder, and we use the learned encoder outputs as compact feature representations for downstream transform prediction.
                 </p>
 
-                <h4>Data Processing Methods</h4>
+                <h4>Data Sources</h4>
                 <p>
-                    Our dataset is generated from logged Minecraft gameplay. Each captured RGB frame is paired with a synchronized 4&times;4 homogeneous pose matrix representing the player pose in world coordinates. During preprocessing, frames are organized into temporally adjacent pairs, and the relative transform between frame <em>n</em> and frame <em>n+1</em> is computed from the corresponding pose matrices. These relative transforms are then converted into a regression target consisting of 6D rotation and 3D translation.
+                    Our dataset is generated using a custom-built Minecraft mod that captures gameplay frames along with their corresponding pose data. With a few hours of gameplay, we are able to collect a dataset consisting of millions of labeled images. Each team member has independently recorded approximately 30–60 minutes of gameplay across a variety of Minecraft biomes. Additionally, gameplay was captured under diverse environmental conditions, including the presence or absence of mobs and varying weather scenarios such as rain and snow.
+                </p>
+
+                <h4>Data Pre-Processing and Augmentation</h4>
+                <p>
+                    Each captured RGB frame is paired with a synchronized 4&times;4 homogeneous pose matrix representing the player pose in world coordinates. During preprocessing, frames are organized into temporally adjacent pairs, and the relative transform between frame <em>n</em> and frame <em>n+1</em> is computed from the corresponding pose matrices. These relative transforms are then converted into a regression target consisting of 6D rotation and 3D translation.
                 </p>
                 <p>
                     This preprocessing pipeline was selected because the visual odometry task is naturally defined in terms of motion between consecutive frames. Pairing adjacent images with their relative transforms provides direct supervision for pose regression, while also supporting self-supervised pretraining of the encoder on the image data itself. This makes it possible to train the visual feature extractor without manual labels and then reuse the learned encoder in the downstream motion estimation model.
                 </p>
+                <p>
+                    To improve the robustness and generalization of our autoencoder models, we applied data augmentation to a subset of the training data. This enabled us to increase dataset diversity without requiring additional data collection, while also helping to mitigate overfitting. Our augmentation pipeline includes variations in brightness, contrast, saturation, hue, and Gaussian blur. These transformations are applied independently, allowing each augmented image to exhibit a unique combination of visual augmentations. Augmentations such as rotation and cropping were intentionally excluded, as they would be counterproductive to our visual odometry models.
+                </p>
+
+                <div class="figure-pair-grid figure-pair-separate-captions">
+                    <figure class="figure-cell">
+                        <img src="media/images/midterm-report-figures/edmond/aug_one.jpg" alt="Augmentation Figure One">
+                        <figcaption>
+                            Gaussian blur and minimal color jitter
+                        </figcaption>
+                    </figure>
+                    <figure class="figure-cell">
+                        <img src="media/images/midterm-report-figures/edmond/aug_two.jpg" alt="Augmentation Figure Two">
+                        <figcaption>
+                            Gaussian blur, brightness increase, saturation change, and hue shift
+                        </figcaption>
+                    </figure>
+                </div>
 
                 <h4>Single-Image Autoencoder</h4>
                 <p>
@@ -276,8 +299,8 @@
 
             <section class="content-panel fade-in">
                 <h2>Contribution Table</h2>
-                <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRvOF2WKPEOyOUuTDDgSeGbIw96JE5M8ZzlW-sfCej8hOEcK6tyabCRgvnmn-oqPida8Oj5KZMi8A2q/pubhtml?gid=0&amp;single=true&amp;chrome=false&amp;widget=false"
-                style="width: 100%; height: 450px">
+                <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQQOgekO056_gBywO4DJGwq57W8FKoNz0kk0ZsYpeXNLVa_N6VQ_SSmLAjAJVJGmP6SS8QPw6D0JWsG/pubhtml?gid=0&amp;single=true&amp;chrome=false&amp;widget=false"
+                style="width: 100%; height: 450px; transform: scale(1.3); transform-origin: top left;">
                 </iframe>
             </section>
 
