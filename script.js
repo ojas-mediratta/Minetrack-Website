@@ -164,8 +164,6 @@ function initScrollSpy() {
             subsection.classList.add("section-anchor");
             const subsectionLink = createScrollSpyItem(subsection.id, subsection.textContent.trim(), "subsection");
             list.appendChild(subsectionLink.item);
-            links.push({ target: subsection, link: subsectionLink.link });
-            observedTargets.push(subsection);
         });
     });
 
