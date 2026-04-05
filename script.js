@@ -1,106 +1,263 @@
-// MineTrack JavaScript functionality
+// MineTrack site functionality
 
-// citation stuff
 const bibliographyDatabase = {
     "scaramuzza2011": "D. Scaramuzza and F. Fraundorfer, 'Visual Odometry [Tutorial],' IEEE Robotics & Automation Magazine, vol. 18, no. 4, pp. 80-92, 2011.",
     "nister2004": "D. Nister, O. Naroditsky, and J. Bergen, 'Visual odometry,' in Proceedings of the 2004 IEEE Computer Society Conference on Computer Vision and Pattern Recognition, 2004.",
     "minecraft2011": "Mojang Studios, 'Minecraft', 2011. [Video game].",
-    "wang2018": "S. Wang, R. Clark, H. Wen, and N. Trigoni, “End-to-end, sequence-to-sequence probabilistic visual odometry through deep neural networks,” The International Journal of Robotics Research, vol. 37, no. 4–5, pp. 513–542, Apr. 2018, doi: 10.1177/0278364917734298.",
-    "modality2023": "M. Memmel, R. Bachmann, and A. Zamir, “Modality-Invariant Visual Odometry for Embodied Vision,” presented at the Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, 2023, pp. 21549–21559. Accessed: Feb. 25, 2026. [Online]. Available: https://openaccess.thecvf.com/content/CVPR2023/html/Memmel_Modality-Invariant_Visual_Odometry_for_Embodied_Vision_CVPR_2023_paper.html",
-    "endtoend2025": "A. O. Françani and M. R. O. A. Maximo, “Transformer-Based Model for Monocular Visual Odometry: A Video Understanding Approach,” IEEE Access, vol. 13, pp. 13959–13971, 2025, doi: 10.1109/ACCESS.2025.3531667.",
-    "metrics2014": "T. Ciarfuglia, G. Costante, P. Valigi, E. Ricci, “Evaluation for non-geometric methods for visual odometry” Robotics and Autonomous Systems, vol. 62, issue 12, p. 1717, August 2014. Available: https://doi.org/10.1016/j.robot.2014.08.001",
-    "kitti": "A. Geiger, P. Lenz, and R. Urtasun, “Are we ready for autonomous driving? The KITTI vision benchmark suite,” in 2012 IEEE Conference on Computer Vision and Pattern Recognition, Jun. 2012, pp. 3354–3361. doi: 10.1109/CVPR.2012.6248074.",
-    "pose": "J. Sturm, N. Engelhard, F. Endres, W. Burgard, and D. Cremers, \"A benchmark for the evaluation of RGB-D SLAM systems,\" in 2012 IEEE/RSJ International Conference on Intelligent Robots and Systems, Oct. 2012, pp. 573–580. doi: 10.1109/IROS.2012.6385773.",
-    "moratuwage2016": "A. M. Moratuwage, D. Wang, and S. Wang, \"Review of visual odometry types, approaches, challenges and applications,\" SpringerPlus, vol. 5, no. 1, 2016.",
-    "monocularsurvey2023": "A. K. et al., \"Monocular Visual SLAM, Visual Odometry and Structure from Motion Methods Applied to 3D Reconstruction: A Comprehensive Survey,\" 2023."
+    "wang2018": "S. Wang, R. Clark, H. Wen, and N. Trigoni, 'End-to-end, sequence-to-sequence probabilistic visual odometry through deep neural networks,' The International Journal of Robotics Research, vol. 37, no. 4-5, pp. 513-542, Apr. 2018. doi: 10.1177/0278364917734298.",
+    "modality2023": "M. Memmel, R. Bachmann, and A. Zamir, 'Modality-Invariant Visual Odometry for Embodied Vision,' presented at the Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, 2023, pp. 21549-21559. Accessed: Feb. 25, 2026. [Online]. Available: https://openaccess.thecvf.com/content/CVPR2023/html/Memmel_Modality-Invariant_Visual_Odometry_for_Embodied_Vision_CVPR_2023_paper.html",
+    "endtoend2025": "A. O. Francani and M. R. O. A. Maximo, 'Transformer-Based Model for Monocular Visual Odometry: A Video Understanding Approach,' IEEE Access, vol. 13, pp. 13959-13971, 2025. doi: 10.1109/ACCESS.2025.3531667.",
+    "metrics2014": "T. Ciarfuglia, G. Costante, P. Valigi, and E. Ricci, 'Evaluation for non-geometric methods for visual odometry,' Robotics and Autonomous Systems, vol. 62, issue 12, p. 1717, August 2014. Available: https://doi.org/10.1016/j.robot.2014.08.001",
+    "kitti": "A. Geiger, P. Lenz, and R. Urtasun, 'Are we ready for autonomous driving? The KITTI vision benchmark suite,' in 2012 IEEE Conference on Computer Vision and Pattern Recognition, Jun. 2012, pp. 3354-3361. doi: 10.1109/CVPR.2012.6248074.",
+    "pose": "J. Sturm, N. Engelhard, F. Endres, W. Burgard, and D. Cremers, 'A benchmark for the evaluation of RGB-D SLAM systems,' in 2012 IEEE/RSJ International Conference on Intelligent Robots and Systems, Oct. 2012, pp. 573-580. doi: 10.1109/IROS.2012.6385773.",
+    "moratuwage2016": "A. M. Moratuwage, D. Wang, and S. Wang, 'Review of visual odometry types, approaches, challenges and applications,' SpringerPlus, vol. 5, no. 1, 2016.",
+    "monocularsurvey2023": "A. K. et al., 'Monocular Visual SLAM, Visual Odometry and Structure from Motion Methods Applied to 3D Reconstruction: A Comprehensive Survey,' 2023."
 };
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener("DOMContentLoaded", function () {
+    initNavShadow();
+    initFadeAnimations();
+    initSmoothScrolling();
+    initArchiveDropdown();
+    initScrollSpy();
+    initCitations();
+});
 
-    // ===== Sticky Nav Shadow =====
-    const nav = document.querySelector('nav');
-    if (nav) {
-        window.addEventListener('scroll', function() {
-            if (window.scrollY > 10) {
-                nav.classList.add('scrolled');
-            } else {
-                nav.classList.remove('scrolled');
-            }
-        }, { passive: true });
+function initNavShadow() {
+    const nav = document.querySelector("nav");
+    if (!nav) {
+        return;
     }
 
-    // ===== Scroll-triggered Fade-in Animations =====
-    const fadeElements = document.querySelectorAll('.fade-in');
-    if (fadeElements.length > 0) {
-        const observer = new IntersectionObserver(function(entries) {
-            entries.forEach(function(entry) {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    observer.unobserve(entry.target);
+    const updateShadow = function () {
+        nav.classList.toggle("scrolled", window.scrollY > 10);
+    };
+
+    updateShadow();
+    window.addEventListener("scroll", updateShadow, { passive: true });
+}
+
+function initFadeAnimations() {
+    const fadeElements = document.querySelectorAll(".fade-in");
+    if (!fadeElements.length) {
+        return;
+    }
+
+    const observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+                entry.target.classList.add("visible");
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.08, rootMargin: "0px 0px -40px 0px" });
+
+    fadeElements.forEach(function (element) {
+        observer.observe(element);
+    });
+}
+
+function initSmoothScrolling() {
+    document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
+        anchor.addEventListener("click", function (event) {
+            const href = this.getAttribute("href");
+            if (!href || href === "#") {
+                return;
+            }
+
+            const target = document.querySelector(href);
+            if (!target) {
+                return;
+            }
+
+            event.preventDefault();
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+    });
+}
+
+function initArchiveDropdown() {
+    const toggle = document.querySelector("[data-archive-toggle]");
+    const panel = document.querySelector("[data-archive-panel]");
+    const label = document.querySelector("[data-archive-label]");
+    if (!toggle || !panel) {
+        return;
+    }
+
+    const pageLabelMap = {
+        "proposal.html": "Proposal",
+        "midterm.html": "Midterm Checkpoint"
+    };
+
+    const currentPage = window.location.pathname.split("/").pop();
+    const archivedLabel = pageLabelMap[currentPage];
+
+    if (label && archivedLabel) {
+        label.textContent = archivedLabel;
+        toggle.classList.add("active");
+        toggle.setAttribute("aria-current", "page");
+    }
+
+    const setOpenState = function (isOpen) {
+        toggle.setAttribute("aria-expanded", String(isOpen));
+        panel.hidden = false;
+        panel.style.maxHeight = isOpen ? panel.scrollHeight + "px" : "0px";
+        panel.style.opacity = isOpen ? "1" : "0";
+        panel.classList.toggle("open", isOpen);
+
+        if (!isOpen) {
+            window.setTimeout(function () {
+                if (!panel.classList.contains("open")) {
+                    panel.hidden = true;
                 }
-            });
-        }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+            }, 260);
+        }
+    };
 
-        fadeElements.forEach(function(el) {
-            observer.observe(el);
-        });
+    setOpenState(false);
+
+    toggle.addEventListener("click", function () {
+        const isOpen = toggle.getAttribute("aria-expanded") === "true";
+        setOpenState(!isOpen);
+    });
+}
+
+function initScrollSpy() {
+    const scrollSpyContainer = document.querySelector("[data-scrollspy]");
+    const reportMain = document.querySelector("[data-report-content]");
+    if (!scrollSpyContainer || !reportMain) {
+        return;
     }
 
-    // ===== GitHub Button Handler =====
-    const githubBtn = document.getElementById('github-btn');
-    if (githubBtn) {
-        githubBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            const githubURL = 'https://github.com/yourusername/minetrack-project';
-            // Uncomment when ready: window.open(githubURL, '_blank');
-            alert('Add your GitHub repository URL in script.js!');
-        });
+    const sections = Array.from(reportMain.querySelectorAll("[data-spy-section]"));
+    if (!sections.length) {
+        return;
     }
 
-    // ===== Smooth Scrolling =====
-    document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
-        anchor.addEventListener('click', function(e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const list = document.createElement("ul");
+    list.className = "scrollspy-list";
+    scrollSpyContainer.classList.add("scrollspy-track");
+
+    const links = [];
+    const observedTargets = [];
+
+    sections.forEach(function (section, sectionIndex) {
+        if (!section.id) {
+            section.id = "section-" + (sectionIndex + 1);
+        }
+
+        section.classList.add("section-anchor");
+
+        const sectionHeading = section.querySelector("h2");
+        const sectionLabel = section.getAttribute("data-nav-label") || (sectionHeading ? sectionHeading.textContent.trim() : "Section " + (sectionIndex + 1));
+        const sectionLink = createScrollSpyItem(section.id, sectionLabel, "");
+        list.appendChild(sectionLink.item);
+        links.push({ target: section, link: sectionLink.link });
+        observedTargets.push(section);
+
+        const subsections = Array.from(section.querySelectorAll("h4"));
+        subsections.forEach(function (subsection, subsectionIndex) {
+            if (!subsection.id) {
+                subsection.id = section.id + "-subsection-" + (subsectionIndex + 1);
             }
+
+            subsection.classList.add("section-anchor");
+            const subsectionLink = createScrollSpyItem(subsection.id, subsection.textContent.trim(), "subsection");
+            list.appendChild(subsectionLink.item);
+            links.push({ target: subsection, link: subsectionLink.link });
+            observedTargets.push(subsection);
         });
     });
 
-    // ===== Visual Showcase Hover =====
-    const visualShowcase = document.querySelector('.placeholder-visual');
-    if (visualShowcase) {
-        visualShowcase.addEventListener('mouseenter', function() {
-            this.style.transform = 'scale(1.015)';
-        });
-        visualShowcase.addEventListener('mouseleave', function() {
-            this.style.transform = 'scale(1)';
-        });
-    }
+    scrollSpyContainer.replaceChildren(list);
 
-    // ===== Citation Manager =====
-    const citeElements = document.querySelectorAll('.cite');
-    const bibliographySection = document.getElementById('bibliography-list');
-
-    if (citeElements.length > 0 && bibliographySection) {
-        let currentCiteNumber = 1;
-        const assignedNumbers = {};
-
-        citeElements.forEach(function(el) {
-            const refId = el.getAttribute('data-ref');
-
-            if (!assignedNumbers[refId]) {
-                assignedNumbers[refId] = currentCiteNumber++;
-                const li = document.createElement('li');
-                li.id = 'ref-' + refId;
-                const citationText = bibliographyDatabase[refId] || "Citation missing for: " + refId;
-                li.innerHTML = '[' + assignedNumbers[refId] + '] ' + citationText;
-                bibliographySection.appendChild(li);
+    const setActiveLink = function (activeId) {
+        links.forEach(function (entry) {
+            const isActive = entry.target.id === activeId;
+            entry.link.classList.toggle("active", isActive);
+            if (isActive) {
+                entry.link.setAttribute("aria-current", "true");
+            } else {
+                entry.link.removeAttribute("aria-current");
             }
-
-            const citeNum = assignedNumbers[refId];
-            el.innerHTML = '<a href="#ref-' + refId + '">[' + citeNum + ']</a>';
         });
+    };
+
+    const observer = new IntersectionObserver(function (entries) {
+        const visibleEntries = entries
+            .filter(function (entry) { return entry.isIntersecting; })
+            .sort(function (a, b) { return b.boundingClientRect.top - a.boundingClientRect.top; })
+            .reverse();
+
+        if (visibleEntries.length > 0) {
+            setActiveLink(visibleEntries[0].target.id);
+        }
+    }, {
+        rootMargin: "-18% 0px -68% 0px",
+        threshold: [0, 0.2, 0.5, 1]
+    });
+
+    observedTargets.forEach(function (target) {
+        observer.observe(target);
+    });
+
+    setActiveLink(observedTargets[0].id);
+
+    const syncScrollSpyPosition = function () {
+        const scrollRange = document.documentElement.scrollHeight - window.innerHeight;
+        const trackRange = scrollSpyContainer.scrollHeight - scrollSpyContainer.clientHeight;
+
+        if (scrollRange <= 0 || trackRange <= 0) {
+            scrollSpyContainer.scrollTop = 0;
+            return;
+        }
+
+        const progress = Math.min(1, Math.max(0, window.scrollY / scrollRange));
+        scrollSpyContainer.scrollTop = progress * trackRange;
+    };
+
+    syncScrollSpyPosition();
+    window.addEventListener("scroll", syncScrollSpyPosition, { passive: true });
+    window.addEventListener("resize", syncScrollSpyPosition, { passive: true });
+}
+
+function createScrollSpyItem(targetId, label, modifierClass) {
+    const item = document.createElement("li");
+    const link = document.createElement("a");
+    link.href = "#" + targetId;
+    link.textContent = label;
+    if (modifierClass) {
+        link.classList.add("scrollspy-" + modifierClass);
     }
-});
+    item.appendChild(link);
+    return { item: item, link: link };
+}
+
+function initCitations() {
+    const citeElements = document.querySelectorAll(".cite");
+    const bibliographySection = document.getElementById("bibliography-list");
+    if (!citeElements.length || !bibliographySection) {
+        return;
+    }
+
+    let currentCiteNumber = 1;
+    const assignedNumbers = {};
+
+    citeElements.forEach(function (element) {
+        const refId = element.getAttribute("data-ref");
+        if (!refId) {
+            return;
+        }
+
+        if (!assignedNumbers[refId]) {
+            assignedNumbers[refId] = currentCiteNumber++;
+
+            const item = document.createElement("li");
+            item.id = "ref-" + refId;
+            item.innerHTML = "[" + assignedNumbers[refId] + "] " + (bibliographyDatabase[refId] || ("Citation missing for: " + refId));
+            bibliographySection.appendChild(item);
+        }
+
+        element.innerHTML = '<a href="#ref-' + refId + '">[' + assignedNumbers[refId] + "]</a>";
+    });
+}
