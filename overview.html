@@ -42,53 +42,164 @@
                     <h1>Overview</h1>
                 </section>
 
-                <section class="content-panel fade-in" id="executive-summary" data-spy-section data-nav-label="Executive Summary">
-                    <h2>Executive Summary</h2>
-                    <p>Use this section for the highest-level explanation of the project: what MineTrack does, why it matters, and what your strongest outcome was. This should be the section a future viewer can read in under a minute and still understand the project.</p>
+                <section class="content-panel fade-in" id="introduction-background" data-spy-section data-nav-label="Introduction">
+                    <h2>Introduction &amp; Background</h2>
+
+                    <p>
+                        Visual Odometry (VO) is the task of estimating an agent's trajectory from a sequence of images by predicting the relative motion between consecutive frames and composing these transformations over time. Accurate VO is fundamental to robotics and autonomous systems, enabling navigation, localization, and state estimation without external positioning infrastructure.
+                    </p>
+
+                    <h4>In the Literature</h4>
+                    <p>
+                        Classical VO pipelines typically rely on feature detection and matching, and geometric optimization, and are commonly categorized as feature-based or appearance-based methods <span class="cite" data-ref="scaramuzza2011"></span>. While effective, these approaches are prone to drift accumulation and sensitivity to visual ambiguity, particularly in texture-poor or repetitive environments. A recent survey highlights a shift toward learning-based methods that replace hand-engineered features with neural representations, especially in monocular settings where scale and depth ambiguities remain significant challenges <span class="cite" data-ref="moratuwage2016"></span>, <span class="cite" data-ref="monocularsurvey2023"></span>.
+                    </p>
+
+                    <h4>The Dataset</h4>
+                    <p>
+                        MineTrack is a visual odometry dataset and framework built in Minecraft. Using a custom logging mod, we record each frame as an RGB image paired with a time-synchronized 4&times;4 homogeneous transformation matrix representing the player's pose in the world coordinate frame. From these poses, we compute ground-truth relative transformation matrices between consecutive frames. Data collection includes structured motion sequences such as straight-line translation, in-place rotation, elevation changes, and curved trajectories across forests, plains, villages, caves, and varied terrain.
+                    </p>
                     <div class="report-placeholder">
-                        <p>Suggested content:</p>
-                        <p>One short paragraph on the problem, one on the final approach, and one on the headline takeaway or best result.</p>
+                        <p>[Add the final dataset size, collection duration, and any notable updates since the midterm checkpoint.]</p>
                     </div>
                 </section>
 
-                <section class="content-panel fade-in" id="project-context" data-spy-section data-nav-label="Project Context">
-                    <h2>Project Context</h2>
-                    <p>Use this section to frame the motivation for visual odometry in Minecraft, explain the broader robotics connection, and introduce the research question that guided the project.</p>
+                <section class="content-panel fade-in" id="problem-definition" data-spy-section data-nav-label="Problem Definition">
+                    <h2>Problem Definition</h2>
+                    <p>
+                        Reliable motion estimation from visual input is a core requirement for autonomous navigation. Visual Odometry estimates trajectory by estimating consecutive transforms between camera poses. MineTrack tackles learning-based visual odometry in a controlled 3D environment. Given two consecutive RGB frames from Minecraft, we aim to predict the relative motion of the agent between frames (translation and rotation). By composing predicted frame-to-frame transforms over time, we reconstruct the full trajectory and measure drift versus ground truth.
+                    </p>
+
                     <h4>Motivation</h4>
-                    <p>Summarize why Minecraft is a useful environment for this work and how it supports faster iteration than a real-world robotics setup.</p>
+                    <p>
+                        Minecraft provides easier data collection and a more constrained environment than the real world, allowing for faster model development and testing. Models validated in Minecraft can later be transferred to photorealistic simulators with more realistic physics engines and sensor modules, with the longer-term goal of SLAM in real-world environments.
+                    </p>
+
                     <h4>Research Question</h4>
-                    <p>State the central question or hypothesis that shaped the project and connect it to the final evaluation.</p>
+                    <p>
+                        Do self-supervised visual embeddings learn geometry-relevant features that improve downstream relative pose regression and reduce trajectory drift?
+                    </p>
+
+                    <h4>Objectives</h4>
+                    <ul>
+                        <li>Learn compact visual embeddings from Minecraft gameplay frames.</li>
+                        <li>Predict frame-to-frame motion and compose predictions into trajectories.</li>
+                        <li>Evaluate trajectory accuracy and drift versus ground truth across varied environments.</li>
+                    </ul>
                 </section>
 
-                <section class="content-panel fade-in" id="approach" data-spy-section data-nav-label="Approach">
-                    <h2>Approach</h2>
-                    <p>This section is a clean place for the final version of your pipeline. Describe the dataset, preprocessing, model design, training setup, and evaluation metrics at the level a technical reader would expect in the main report.</p>
-                    <h4>Dataset and Logging</h4>
-                    <p>Explain how gameplay data was collected, synchronized, and organized into frame-to-frame training examples.</p>
-                    <h4>Model Design</h4>
-                    <p>Describe the final architecture, including the encoder, downstream regressor, and any important design changes made during development.</p>
+                <section class="content-panel fade-in" id="methods" data-spy-section data-nav-label="Methods">
+                    <h2>Methods</h2>
+                    <p>
+                        The final report should present and compare at least three models developed over the semester. For MineTrack, the current pipeline centers on self-supervised representation learning followed by supervised pose regression, with the final comparison framed around how much motion-relevant structure each representation preserves.
+                    </p>
+
+                    <h4>Data Sources</h4>
+                    <p>
+                        Our dataset is generated using a custom-built Minecraft mod that captures gameplay frames along with their corresponding pose data. Each team member recorded gameplay across a variety of Minecraft biomes and motion patterns, including different environmental conditions such as mobs and weather.
+                    </p>
+
+                    <h4>Data Preprocessing and Augmentation</h4>
+                    <p>
+                        Each captured RGB frame is paired with a synchronized 4&times;4 homogeneous pose matrix representing the player pose in world coordinates. During preprocessing, frames are organized into temporally adjacent pairs, and the relative transform between frame <em>n</em> and frame <em>n+1</em> is computed from the corresponding pose matrices. These relative transforms are then converted into a regression target consisting of 6D rotation and 3D translation.
+                    </p>
+                    <p>
+                        To improve robustness, we applied image augmentation to a subset of the training data, including brightness, contrast, saturation, hue, and Gaussian blur transformations. Rotation and cropping were excluded because they would interfere with the visual odometry objective.
+                    </p>
+
+                    <h4>Model 1: Single-Image Autoencoder</h4>
+                    <p>
+                        The first representation-learning model is a single-image autoencoder. It compresses one Minecraft frame into a latent vector and attempts to reconstruct the same frame from that vector. This provides a baseline for assessing whether self-supervised reconstruction can produce useful low-dimensional visual features.
+                    </p>
+
+                    <h4>Model 2: Dual Autoencoder</h4>
+                    <p>
+                        The second model is a dual autoencoder designed to better capture motion-relevant information between consecutive frames. It ingests two sequential frames, compresses them into a latent vector, and reconstructs both the first image and a difference image representing changes between the two frames. This encourages the encoder to represent both scene content and local temporal change.
+                    </p>
+
+                    <h4>Model 3: MLP Transform Regressor</h4>
+                    <p>
+                        The downstream pose estimator is an MLP transform regressor that takes latent vectors from the encoder and predicts the relative motion between two frames. The regression target is parameterized as 6D rotation and 3D translation. We use this model as a simple supervised baseline to test whether the learned embeddings contain sufficient information for pose estimation.
+                    </p>
+
+                    <h4>Why These Methods Were Selected</h4>
+                    <p>
+                        The methods were chosen to balance feasibility, interpretability, and relevance to the project goal. Autoencoders provide a practical self-supervised way to compress high-dimensional image data into compact latent features, while the dual autoencoder makes motion-related change more explicit. The MLP regressor serves as a clear supervised baseline for evaluating whether those embeddings are informative enough for relative pose prediction.
+                    </p>
+
                     <h4>Training and Evaluation</h4>
-                    <p>Outline the losses, training setup, metrics, and experiment structure used to judge the final system.</p>
+                    <p>
+                        Autoencoder models were evaluated using reconstruction quality and loss curves. The transform regressor was evaluated using translation and rotation error plots derived from predicted relative motion versus ground truth. The final report should compare the three models using these quantitative metrics and any trajectory-level visualizations you add later.
+                    </p>
+                    <div class="report-placeholder">
+                        <p>[Add the final hyperparameters, optimizer settings, and any model changes made after the midterm checkpoint.]</p>
+                        <p>[If you introduce an additional baseline or sequence model, summarize it here so the report still covers 3+ algorithms/models.]</p>
+                    </div>
                 </section>
 
-                <section class="content-panel fade-in" id="results" data-spy-section data-nav-label="Results">
-                    <h2>Results</h2>
-                    <p>This is the best home for your plots, reconstruction examples, trajectory figures, and any headline metrics you want people to notice first.</p>
-                    <h4>Best Results</h4>
-                    <p>Highlight the strongest quantitative outcome or model comparison you want future viewers to remember.</p>
-                    <h4>Visualizations</h4>
-                    <p>Place your most important figures here and pair them with short interpretations.</p>
+                <section class="content-panel fade-in" id="results-discussion" data-spy-section data-nav-label="Results & Discussion">
+                    <h2>Results &amp; Discussion</h2>
+
+                    <h4>Summary of Current Results</h4>
+                    <p>
+                        The current implementation produces reconstruction outputs, autoencoder and MLP training loss curves, transform-related error plots, and a trajectory/yaw comparison plot. These results provide an initial view of reconstruction quality, training behavior, and downstream motion prediction performance.
+                    </p>
+
+                    <h4>Autoencoder Reconstruction Results</h4>
+                    <p>
+                        Reconstruction outputs provide a qualitative view of what information is retained in the learned latent space. The single-image autoencoder reconstructs one Minecraft frame, while the dual autoencoder reconstructs the first frame together with an image difference target.
+                    </p>
+                    <div class="report-placeholder">
+                        <p>[Insert the final reconstruction figures and annotate what each model preserves or loses.]</p>
+                    </div>
+
+                    <h4>Training Loss Results</h4>
+                    <p>
+                        Training loss curves show how reconstruction and regression behavior evolve over time. The autoencoders trained more smoothly than the downstream regressor, while the MLP required additional tuning to avoid degenerate identity-transform predictions.
+                    </p>
+                    <div class="report-placeholder">
+                        <p>[Add the final loss curves and note the most important training differences between the three models.]</p>
+                    </div>
+
+                    <h4>Pose Prediction Performance</h4>
+                    <p>
+                        The transform and rotation error plots compare predicted relative motion against ground truth and provide the clearest view of pose-regression performance. A final comparison should explain which representation worked best and why.
+                    </p>
+                    <div class="report-placeholder">
+                        <p>[Add the final quantitative metrics here, such as trajectory error, rotation error, or any other score used to compare models.]</p>
+                        <p>[Explain the tradeoffs between reconstruction quality, embedding usefulness, and motion prediction accuracy.]</p>
+                    </div>
+
+                    <h4>Interpretation and Limitations</h4>
+                    <p>
+                        The midterm checkpoint showed that the pipeline can be trained end-to-end, but the downstream regression stage was more sensitive than the autoencoders. The final report should state what changed after the midterm, what worked best, and where the system still fails.
+                    </p>
+                    <div class="report-placeholder">
+                        <p>[Summarize the strongest result, the main limitation, and the most important next step.]</p>
+                    </div>
                 </section>
 
-                <section class="content-panel fade-in" id="discussion" data-spy-section data-nav-label="Discussion">
-                    <h2>Discussion</h2>
-                    <p>Use this section for the story behind the results: what worked, what failed, what changed during development, and what the final takeaways are for future work.</p>
-                    <h4>What Worked</h4>
-                    <p>Call out the choices that improved stability, accuracy, or clarity in your pipeline.</p>
-                    <h4>Limitations</h4>
-                    <p>Document the main bottlenecks, weak spots, or unresolved issues in the current version.</p>
-                    <h4>Future Work</h4>
-                    <p>List the next experiments or refinements that would matter most if the project continued.</p>
+
+                <section class="content-panel fade-in" id="awards" data-spy-section data-nav-label="Awards">
+                    <h2>Awards</h2>
+                    <p>We opt in to the "Outstanding Project" award contest.</p>
+                </section>
+
+
+                <section class="content-panel fade-in" id="gantt-chart" data-spy-section data-nav-label="Gantt Chart">
+                    <h2>Gantt Chart</h2>
+                    <p>[Add a project Gantt chart showing each member's planned responsibilities across the full semester.]</p>
+                    <div class="report-placeholder">
+                        <p>[Insert the final Gantt chart image, table, or embedded spreadsheet here.]</p>
+                    </div>
+                </section>
+
+                <section class="content-panel fade-in" id="contribution-table" data-spy-section data-nav-label="Contributions">
+                    <h2>Contribution Table</h2>
+                    <p>[List all group members and their explicit contributions to the final report, code, figures, and presentation.]</p>
+                    <div class="report-placeholder">
+                        <p>[Add a table in the required format.]</p>
+                        <p>[Member name | Contributions]</p>
+                    </div>
                 </section>
 
                 <section class="content-panel fade-in" id="references" data-spy-section data-nav-label="References">
