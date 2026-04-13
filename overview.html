@@ -46,20 +46,26 @@
                     <h2>Introduction &amp; Background</h2>
 
                     <p>
-                        Visual Odometry (VO) is the task of estimating an agent's trajectory from a sequence of images by predicting the relative motion between consecutive frames and composing these transformations over time. Accurate VO is fundamental to robotics and autonomous systems, enabling navigation, localization, and state estimation without external positioning infrastructure.
+                        Visual Odometry (VO) estimates an agent's trajectory from image sequences by predicting frame-to-frame motion and composing those local transforms over time. MineTrack studies this problem in Minecraft, using synchronized gameplay frames and pose logs to train models that infer camera motion from RGB input alone.
                     </p>
 
                     <h4>In the Literature</h4>
                     <p>
-                        Classical VO pipelines typically rely on feature detection and matching, and geometric optimization, and are commonly categorized as feature-based or appearance-based methods <span class="cite" data-ref="scaramuzza2011"></span>. While effective, these approaches are prone to drift accumulation and sensitivity to visual ambiguity, particularly in texture-poor or repetitive environments. A recent survey highlights a shift toward learning-based methods that replace hand-engineered features with neural representations, especially in monocular settings where scale and depth ambiguities remain significant challenges <span class="cite" data-ref="moratuwage2016"></span>, <span class="cite" data-ref="monocularsurvey2023"></span>.
+                        Classical VO systems estimate motion by tracking visual features across frames and refining the resulting trajectory through geometric optimization <span class="cite" data-ref="nister2004"></span>, <span class="cite" data-ref="scaramuzza2011"></span>. Systems such as ORB-SLAM show that feature tracking, mapping, relocalization, and loop closure can support robust real-time monocular localization <span class="cite" data-ref="orbslam2015"></span>, but repeated textures, low-feature regions, lighting changes, and accumulated drift remain important failure modes.
+                    </p>
+                    <p>
+                        Standard benchmarks such as KITTI motivate evaluating VO at the trajectory level, not only through per-frame prediction loss <span class="cite" data-ref="kitti"></span>. Learning-based approaches, including DeepVO, instead learn motion-relevant visual representations directly from image streams <span class="cite" data-ref="deepvo2017"></span>. These methods are attractive for monocular RGB input, but surveys emphasize persistent challenges around scale ambiguity, drift, and generalization <span class="cite" data-ref="moratuwage2016"></span>, <span class="cite" data-ref="monocularsurvey2024"></span>. MineTrack follows this learning-based direction by training autoencoder representations and supervised pose regressors, then evaluating rollout behavior, endpoint error, path-length consistency, and translation error over time.
                     </p>
 
                     <h4>The Dataset</h4>
                     <p>
-                        MineTrack is a visual odometry dataset and framework built in Minecraft. Using a custom logging mod, we record each frame as an RGB image paired with a time-synchronized 4&times;4 homogeneous transformation matrix representing the player's pose in the world coordinate frame. From these poses, we compute ground-truth relative transformation matrices between consecutive frames. Data collection includes structured motion sequences such as straight-line translation, in-place rotation, elevation changes, and curved trajectories across forests, plains, villages, caves, and varied terrain.
+                        MineTrack includes a custom dataset collected with a Minecraft logging mod. Each run contains a time-ordered sequence of RGB frames and a synchronized transform log describing the player's camera pose as a 4&times;4 homogeneous matrix. These poses support both absolute trajectory visualization and ground-truth relative transforms between consecutive frames.
+                    </p>
+                    <p>
+                        The data is organized by run because VO is inherently temporal. During preprocessing, consecutive frames are paired as <em>I<sub>t</sub></em> and <em>I<sub>t+1</sub></em>, and their poses are converted into relative rotation and translation targets. The recordings span multiple terrain types and motion patterns, including forward motion, turning, curved paths, elevation changes, and still periods; held-out evaluation runs are kept separate so trajectory plots and videos measure generalization rather than memorization.
                     </p>
                     <div class="report-placeholder">
-                        <p>[Add the final dataset size, collection duration, and any notable updates since the midterm checkpoint.]</p>
+                        <p>[Add final dataset counts here: number of runs, total frames, approximate duration, biome split, and train/validation/evaluation split.]</p>
                     </div>
                 </section>
 
@@ -90,49 +96,61 @@
                 <section class="content-panel fade-in" id="methods" data-spy-section data-nav-label="Methods">
                     <h2>Methods</h2>
                     <p>
-                        The final report should present and compare at least three models developed over the semester. For MineTrack, the current pipeline centers on self-supervised representation learning followed by supervised pose regression, with the final comparison framed around how much motion-relevant structure each representation preserves.
+                        MineTrack uses a staged visual odometry pipeline that converts paired Minecraft frames into a predicted trajectory. Each training example begins with two temporally adjacent RGB frames and their synchronized camera poses. The frames provide the visual input, while the poses provide the ground-truth relative transform between the two time steps. The overall objective is to learn a model that can predict this frame-to-frame motion from images alone and then compose many local predictions into a full trajectory.
+                    </p>
+                    <p>
+                        The pipeline is organized around two connected learning stages. First, a self-supervised visual representation model learns compact features from paired frames. This stage is intended to preserve both scene appearance and local temporal change without requiring manual labels beyond the captured frames themselves. Second, a supervised pose regressor uses those learned visual features to estimate relative motion. Each predicted relative transform is represented as rotation and translation, converted into an SE(3) pose transform, and chained over time to produce a reconstructed path.
+                    </p>
+                    <p>
+                        Evaluation is performed at both the local and trajectory levels. Locally, we compare each predicted relative transform against the ground-truth transform between consecutive frames. At the trajectory level, we compose the predicted transforms across an entire run and compare the resulting path to the ground truth using rollout plots, endpoint error, translation error over time, and path-length consistency. This distinction is important because small per-frame translation errors can accumulate into large long-horizon drift.
                     </p>
 
-                    <h4>Data Sources</h4>
+                    <figure class="report-figure report-figure-wide">
+                        <img src="media/images/final-report-figures/overall_pipeline.png" alt="Overall MineTrack visual odometry pipeline">
+                        <figcaption>
+                            Overall MineTrack pipeline. Consecutive Minecraft frames are converted into visual features, used to predict relative SE(3) motion, and composed over time into a trajectory for comparison against ground truth.
+                        </figcaption>
+                    </figure>
+
+                    <h4>Data Preparation</h4>
                     <p>
-                        Our dataset is generated using a custom-built Minecraft mod that captures gameplay frames along with their corresponding pose data. Each team member recorded gameplay across a variety of Minecraft biomes and motion patterns, including different environmental conditions such as mobs and weather.
+                        The dataset is generated with a custom Minecraft logging mod that records RGB gameplay frames alongside synchronized pose data. During preprocessing, frames are organized into temporally adjacent pairs or short sequences. The corresponding poses are used to compute the ground-truth relative transform between frame <em>t</em> and frame <em>t+1</em>, which becomes the supervised target for pose regression. We also apply image augmentations such as brightness, contrast, saturation, hue, and blur changes when training visual representations; geometric image transformations are avoided because they would alter the visual odometry target.
                     </p>
 
-                    <h4>Data Preprocessing and Augmentation</h4>
+                    <h4>Dual Autoencoder Representation Learning</h4>
                     <p>
-                        Each captured RGB frame is paired with a synchronized 4&times;4 homogeneous pose matrix representing the player pose in world coordinates. During preprocessing, frames are organized into temporally adjacent pairs, and the relative transform between frame <em>n</em> and frame <em>n+1</em> is computed from the corresponding pose matrices. These relative transforms are then converted into a regression target consisting of 6D rotation and 3D translation.
+                        We evaluated autoencoder-based representation learning as the first stage of the pipeline. The ordinary autoencoder served as an initial baseline: it takes a single RGB frame, compresses it through a convolutional encoder, and reconstructs the same image. This helped establish whether self-supervised reconstruction could learn compact visual features from Minecraft observations. However, because single-image reconstruction does not directly require the latent space to preserve motion cues, we shifted our primary representation model to the dual autoencoder.
                     </p>
                     <p>
-                        To improve robustness, we applied image augmentation to a subset of the training data, including brightness, contrast, saturation, hue, and Gaussian blur transformations. Rotation and cropping were excluded because they would interfere with the visual odometry objective.
+                        The dual autoencoder receives two consecutive RGB frames, <em>I<sub>t</sub></em> and <em>I<sub>t+1</sub></em>, and concatenates them along the channel dimension to form a 6-channel input tensor of shape 6&times;256&times;256. This early-fusion input is passed through a five-block convolutional encoder. Each block uses a 4&times;4 convolution with stride 2 and padding 1, followed by batch normalization and a LeakyReLU activation. The spatial resolution is reduced from 256&times;256 to 8&times;8 while the channel count increases as 6 &rarr; 32 &rarr; 64 &rarr; 128 &rarr; 256 &rarr; 512.
                     </p>
-
-                    <h4>Model 1: Single-Image Autoencoder</h4>
                     <p>
-                        The first representation-learning model is a single-image autoencoder. It compresses one Minecraft frame into a latent vector and attempts to reconstruct the same frame from that vector. This provides a baseline for assessing whether self-supervised reconstruction can produce useful low-dimensional visual features.
+                        After the encoder, a 1&times;1 bottleneck convolution compresses the 512-channel feature map into a 64-channel spatial latent representation, producing a latent tensor of shape 64&times;8&times;8. This bottleneck is important because it preserves spatial structure while forcing the network to discard unnecessary pixel-level detail. A second 1&times;1 convolution expands the latent representation back to 512 channels before decoding.
                     </p>
-
-                    <h4>Model 2: Dual Autoencoder</h4>
                     <p>
-                        The second model is a dual autoencoder designed to better capture motion-relevant information between consecutive frames. It ingests two sequential frames, compresses them into a latent vector, and reconstructs both the first image and a difference image representing changes between the two frames. This encourages the encoder to represent both scene content and local temporal change.
-                    </p>
-
-                    <h4>Model 3: MLP Transform Regressor</h4>
-                    <p>
-                        The downstream pose estimator is an MLP transform regressor that takes latent vectors from the encoder and predicts the relative motion between two frames. The regression target is parameterized as 6D rotation and 3D translation. We use this model as a simple supervised baseline to test whether the learned embeddings contain sufficient information for pose estimation.
-                    </p>
-
-                    <h4>Why These Methods Were Selected</h4>
-                    <p>
-                        The methods were chosen to balance feasibility, interpretability, and relevance to the project goal. Autoencoders provide a practical self-supervised way to compress high-dimensional image data into compact latent features, while the dual autoencoder makes motion-related change more explicit. The MLP regressor serves as a clear supervised baseline for evaluating whether those embeddings are informative enough for relative pose prediction.
-                    </p>
-
-                    <h4>Training and Evaluation</h4>
-                    <p>
-                        Autoencoder models were evaluated using reconstruction quality and loss curves. The transform regressor was evaluated using translation and rotation error plots derived from predicted relative motion versus ground truth. The final report should compare the three models using these quantitative metrics and any trajectory-level visualizations you add later.
+                        The model then branches into two decoder heads. Both decoders mirror the encoder using transposed convolutions to return to 3&times;256&times;256 output images. The image decoder reconstructs the first frame and uses a sigmoid output activation so pixel values remain in the normalized image range. The difference decoder reconstructs the image difference <em>I<sub>t+1</sub> - I<sub>t</sub></em> and uses a tanh activation because difference values can be positive or negative. During training, the image reconstruction objective combines SSIM and L1 loss, while the difference reconstruction uses L1 loss with a larger weight to emphasize motion-sensitive visual changes.
                     </p>
                     <div class="report-placeholder">
-                        <p>[Add the final hyperparameters, optimizer settings, and any model changes made after the midterm checkpoint.]</p>
-                        <p>[If you introduce an additional baseline or sequence model, summarize it here so the report still covers 3+ algorithms/models.]</p>
+                        <p>[Insert dual autoencoder architecture figure here once finalized.]</p>
+                        <p>[Insert example outputs showing Frame t, Frame t+1, reconstructed Frame t, true difference, reconstructed difference, and optional absolute reconstruction error.]</p>
+                    </div>
+
+                    <h4>MLP Transform Regressor</h4>
+                    <p>
+                        The downstream supervised model is an EncoderMLP transform regressor. It takes the same pair of consecutive RGB frames used by the dual autoencoder and stacks them into a 6&times;256&times;256 input. The front end of the regressor matches the dual autoencoder encoder: five stride-2 convolutional blocks reduce the input to a 512&times;8&times;8 feature map, and a 1&times;1 bottleneck reduces this to a 64&times;8&times;8 latent feature map. In practice, the encoder and bottleneck weights are initialized from a trained dual autoencoder checkpoint so that supervised pose regression starts from a representation already shaped by reconstruction and frame-difference learning.
+                    </p>
+                    <p>
+                        After the transferred visual backbone, the regressor applies two additional spatial-reduction layers. The first 3&times;3 convolution uses stride 2 and padding 1 to map 64&times;8&times;8 features to 128&times;4&times;4 features. The second maps 128&times;4&times;4 features to 256&times;2&times;2. These layers use batch normalization, dropout, and ReLU activations. The final 256&times;2&times;2 tensor is flattened into a 1024-dimensional vector.
+                    </p>
+                    <p>
+                        The flattened vector is passed through a three-layer MLP head with dimensions 1024 &rarr; 512 &rarr; 256 &rarr; 9. Dropout and ReLU are applied between hidden layers. The 9-dimensional output represents the relative transform between the two frames: the first six values encode rotation using a 6D continuous rotation representation, and the final three values encode translation. The 6D rotation is converted into a valid rotation matrix using Gram-Schmidt orthogonalization, then combined with the translation vector to form a 4&times;4 SE(3) transform.
+                    </p>
+                    <p>
+                        To evaluate full trajectories, the model predicts relative transforms for each adjacent frame pair in a run and composes them over time starting from the first ground-truth pose. Earlier MLP experiments showed that yaw estimates could be reasonable while translation error accumulated over long rollouts. To address this, the most recent training objective adds translation-focused sequence terms in addition to per-step rotation and translation losses. These include multi-horizon rollout translation loss, endpoint translation loss, and path-length consistency loss, all intended to penalize small translation underestimates that compound into large trajectory drift.
+                    </p>
+                    <div class="report-placeholder">
+                        <p>[Insert MLP regressor architecture figure here once finalized.]</p>
+                        <p>[Insert an evaluation figure or video still showing input frames alongside the predicted and ground-truth trajectory rollout.]</p>
                     </div>
                 </section>
 

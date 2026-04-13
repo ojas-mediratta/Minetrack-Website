@@ -1,17 +1,20 @@
 // MineTrack site functionality
 
 const bibliographyDatabase = {
-    "scaramuzza2011": "D. Scaramuzza and F. Fraundorfer, 'Visual Odometry [Tutorial],' IEEE Robotics & Automation Magazine, vol. 18, no. 4, pp. 80-92, 2011.",
-    "nister2004": "D. Nister, O. Naroditsky, and J. Bergen, 'Visual odometry,' in Proceedings of the 2004 IEEE Computer Society Conference on Computer Vision and Pattern Recognition, 2004.",
+    "scaramuzza2011": "D. Scaramuzza and F. Fraundorfer, 'Visual Odometry [Tutorial],' IEEE Robotics & Automation Magazine, vol. 18, no. 4, pp. 80-92, Dec. 2011. doi: 10.1109/MRA.2011.943233.",
+    "nister2004": "D. Nister, O. Naroditsky, and J. Bergen, 'Visual odometry,' in Proceedings of the 2004 IEEE Computer Society Conference on Computer Vision and Pattern Recognition, 2004, vol. 1, pp. I-652-I-659. doi: 10.1109/CVPR.2004.1315094.",
+    "orbslam2015": "R. Mur-Artal, J. M. M. Montiel, and J. D. Tardos, 'ORB-SLAM: A Versatile and Accurate Monocular SLAM System,' IEEE Transactions on Robotics, vol. 31, no. 5, pp. 1147-1163, Oct. 2015. doi: 10.1109/TRO.2015.2463671.",
     "minecraft2011": "Mojang Studios, 'Minecraft', 2011. [Video game].",
     "wang2018": "S. Wang, R. Clark, H. Wen, and N. Trigoni, 'End-to-end, sequence-to-sequence probabilistic visual odometry through deep neural networks,' The International Journal of Robotics Research, vol. 37, no. 4-5, pp. 513-542, Apr. 2018. doi: 10.1177/0278364917734298.",
+    "deepvo2017": "S. Wang, R. Clark, H. Wen, and N. Trigoni, 'DeepVO: Towards End-to-End Visual Odometry with Deep Recurrent Convolutional Neural Networks,' in 2017 IEEE International Conference on Robotics and Automation (ICRA), 2017, pp. 2043-2050. doi: 10.1109/ICRA.2017.7989236.",
     "modality2023": "M. Memmel, R. Bachmann, and A. Zamir, 'Modality-Invariant Visual Odometry for Embodied Vision,' presented at the Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, 2023, pp. 21549-21559. Accessed: Feb. 25, 2026. [Online]. Available: https://openaccess.thecvf.com/content/CVPR2023/html/Memmel_Modality-Invariant_Visual_Odometry_for_Embodied_Vision_CVPR_2023_paper.html",
     "endtoend2025": "A. O. Francani and M. R. O. A. Maximo, 'Transformer-Based Model for Monocular Visual Odometry: A Video Understanding Approach,' IEEE Access, vol. 13, pp. 13959-13971, 2025. doi: 10.1109/ACCESS.2025.3531667.",
     "metrics2014": "T. Ciarfuglia, G. Costante, P. Valigi, and E. Ricci, 'Evaluation for non-geometric methods for visual odometry,' Robotics and Autonomous Systems, vol. 62, issue 12, p. 1717, August 2014. Available: https://doi.org/10.1016/j.robot.2014.08.001",
     "kitti": "A. Geiger, P. Lenz, and R. Urtasun, 'Are we ready for autonomous driving? The KITTI vision benchmark suite,' in 2012 IEEE Conference on Computer Vision and Pattern Recognition, Jun. 2012, pp. 3354-3361. doi: 10.1109/CVPR.2012.6248074.",
     "pose": "J. Sturm, N. Engelhard, F. Endres, W. Burgard, and D. Cremers, 'A benchmark for the evaluation of RGB-D SLAM systems,' in 2012 IEEE/RSJ International Conference on Intelligent Robots and Systems, Oct. 2012, pp. 573-580. doi: 10.1109/IROS.2012.6385773.",
     "moratuwage2016": "A. M. Moratuwage, D. Wang, and S. Wang, 'Review of visual odometry types, approaches, challenges and applications,' SpringerPlus, vol. 5, no. 1, 2016.",
-    "monocularsurvey2023": "A. K. et al., 'Monocular Visual SLAM, Visual Odometry and Structure from Motion Methods Applied to 3D Reconstruction: A Comprehensive Survey,' 2023."
+    "monocularsurvey2023": "E. P. Herrera-Granda, J. C. Torres-Cantero, and D. H. Peluffo-Ordonez, 'Monocular Visual SLAM, Visual Odometry, and Structure from Motion Methods Applied to 3D Reconstruction: A Comprehensive Survey,' SSRN, 2023. doi: 10.2139/ssrn.4546921.",
+    "monocularsurvey2024": "E. P. Herrera-Granda, J. C. Torres-Cantero, and D. H. Peluffo-Ordonez, 'Monocular Visual SLAM, Visual Odometry, and Structure from Motion Methods Applied to 3D Reconstruction: A Comprehensive Survey,' Heliyon, vol. 10, no. 18, e37356, Sep. 2024. doi: 10.1016/j.heliyon.2024.e37356."
 };
 
 document.addEventListener("DOMContentLoaded", function () {
