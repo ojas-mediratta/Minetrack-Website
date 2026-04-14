@@ -165,10 +165,20 @@
                     <p>
                         To evaluate full trajectories, the model predicts relative transforms for each adjacent frame pair in a run and composes them over time starting from the first ground-truth pose. Earlier MLP experiments showed that yaw estimates could be reasonable while translation error accumulated over long rollouts. To address this, the most recent training objective adds translation-focused sequence terms in addition to per-step rotation and translation losses. These include multi-horizon rollout translation loss, endpoint translation loss, and path-length consistency loss, all intended to penalize small translation underestimates that compound into large trajectory drift.
                     </p>
+                    <figure class="report-figure report-figure-wide">
+                        <img src="media/images/final-report-figures/encoder_mlp.webp" alt="EncoderMLP transform regressor architecture">
+                        <figcaption>
+                            EncoderMLP transform regressor architecture. Consecutive Minecraft frames are stacked into a 6-channel input, passed through the transferred encoder and spatial reduction layers, then mapped by an MLP pose head to a 9D relative pose representation for trajectory rollout.
+                        </figcaption>
+                    </figure>
                     <div class="report-placeholder">
-                        <p>[Insert MLP regressor architecture figure here once finalized.]</p>
                         <p>[Insert an evaluation figure or video still showing input frames alongside the predicted and ground-truth trajectory rollout.]</p>
                     </div>
+
+                    <p>
+                        Portions of the architecture diagrams were generated with NN-SVG, including the overall pipeline figure, the dual autoencoder figure, the MLP regressor figure, and the transformer model figure <span class="cite" data-ref="nnsvg"></span>.
+                    </p>
+
                 </section>
 
                 <section class="content-panel fade-in" id="results-discussion" data-spy-section data-nav-label="Results & Discussion">

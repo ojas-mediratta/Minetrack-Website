@@ -14,7 +14,8 @@ const bibliographyDatabase = {
     "pose": "J. Sturm, N. Engelhard, F. Endres, W. Burgard, and D. Cremers, 'A benchmark for the evaluation of RGB-D SLAM systems,' in 2012 IEEE/RSJ International Conference on Intelligent Robots and Systems, Oct. 2012, pp. 573-580. doi: 10.1109/IROS.2012.6385773.",
     "moratuwage2016": "A. M. Moratuwage, D. Wang, and S. Wang, 'Review of visual odometry types, approaches, challenges and applications,' SpringerPlus, vol. 5, no. 1, 2016.",
     "monocularsurvey2023": "E. P. Herrera-Granda, J. C. Torres-Cantero, and D. H. Peluffo-Ordonez, 'Monocular Visual SLAM, Visual Odometry, and Structure from Motion Methods Applied to 3D Reconstruction: A Comprehensive Survey,' SSRN, 2023. doi: 10.2139/ssrn.4546921.",
-    "monocularsurvey2024": "E. P. Herrera-Granda, J. C. Torres-Cantero, and D. H. Peluffo-Ordonez, 'Monocular Visual SLAM, Visual Odometry, and Structure from Motion Methods Applied to 3D Reconstruction: A Comprehensive Survey,' Heliyon, vol. 10, no. 18, e37356, Sep. 2024. doi: 10.1016/j.heliyon.2024.e37356."
+    "monocularsurvey2024": "E. P. Herrera-Granda, J. C. Torres-Cantero, and D. H. Peluffo-Ordonez, 'Monocular Visual SLAM, Visual Odometry, and Structure from Motion Methods Applied to 3D Reconstruction: A Comprehensive Survey,' Heliyon, vol. 10, no. 18, e37356, Sep. 2024. doi: 10.1016/j.heliyon.2024.e37356.",
+    "nnsvg": "A. LeNail, 'NN-SVG: Publication-Ready Neural Network Architecture Schematics,' 2019. [Online]. Available: https://alexlenail.me/NN-SVG/"
 };
 
 document.addEventListener("DOMContentLoaded", function () {
