@@ -106,9 +106,9 @@
                     </p>
 
                     <figure class="report-figure report-figure-wide">
-                        <img src="media/images/final-report-figures/overall_pipeline.png" alt="Overall MineTrack visual odometry pipeline">
+                        <img src="media/images/final-report-figures/overall_pipeline.webp" alt="Overall MineTrack visual odometry pipeline">
                         <figcaption>
-                            Overall MineTrack pipeline. Consecutive Minecraft frames are converted into visual features, used to predict relative SE(3) motion, and composed over time into a trajectory for comparison against ground truth.
+                            Overall MineTrack pipeline. Self-supervised representation learning with the dual autoencoder feeds the supervised EncoderMLP pose regressor. Consecutive Minecraft frames are converted into visual features, used to predict relative SE(3) motion, and composed over time into a trajectory for comparison against ground truth.
                         </figcaption>
                     </figure>
 
@@ -116,6 +116,21 @@
                     <p>
                         The dataset is generated with a custom Minecraft logging mod that records RGB gameplay frames alongside synchronized pose data. During preprocessing, frames are organized into temporally adjacent pairs or short sequences. The corresponding poses are used to compute the ground-truth relative transform between frame <em>t</em> and frame <em>t+1</em>, which becomes the supervised target for pose regression. We also apply image augmentations such as brightness, contrast, saturation, hue, and blur changes when training visual representations; geometric image transformations are avoided because they would alter the visual odometry target.
                     </p>
+
+                     <div class="figure-pair-grid figure-pair-separate-captions">
+                        <figure class="figure-cell">
+                            <img src="media/images/midterm-report-figures/edmond/aug_one.jpg" alt="Augmentation figure one">
+                            <figcaption>
+                                Left: Original, Right: Gaussian blur and minimal color jitter
+                            </figcaption>
+                        </figure>
+                        <figure class="figure-cell">
+                            <img src="media/images/midterm-report-figures/edmond/aug_two.jpg" alt="Augmentation figure two">
+                            <figcaption>
+                                Left: Original, Right: Gaussian blur, brightness increase, saturation change, and hue shift
+                            </figcaption>
+                        </figure>
+                    </div>
 
                     <h4>Dual Autoencoder Representation Learning</h4>
                     <p>
@@ -130,10 +145,12 @@
                     <p>
                         The model then branches into two decoder heads. Both decoders mirror the encoder using transposed convolutions to return to 3&times;256&times;256 output images. The image decoder reconstructs the first frame and uses a sigmoid output activation so pixel values remain in the normalized image range. The difference decoder reconstructs the image difference <em>I<sub>t+1</sub> - I<sub>t</sub></em> and uses a tanh activation because difference values can be positive or negative. During training, the image reconstruction objective combines SSIM and L1 loss, while the difference reconstruction uses L1 loss with a larger weight to emphasize motion-sensitive visual changes.
                     </p>
-                    <div class="report-placeholder">
-                        <p>[Insert dual autoencoder architecture figure here once finalized.]</p>
-                        <p>[Insert example outputs showing Frame t, Frame t+1, reconstructed Frame t, true difference, reconstructed difference, and optional absolute reconstruction error.]</p>
-                    </div>
+                    <figure class="report-figure report-figure-wide">
+                        <img src="media/images/final-report-figures/dual_autoencoder.webp" alt="Dual autoencoder architecture for paired-frame representation learning">
+                        <figcaption>
+                            Dual autoencoder architecture. Paired Minecraft frames are stacked into a 6-channel input, compressed into a 64&times;8&times;8 latent representation, then decoded into two targets: the first RGB frame and the frame difference <em>I<sub>t+1</sub> - I<sub>t</sub></em>.
+                        </figcaption>
+                    </figure>
 
                     <h4>MLP Transform Regressor</h4>
                     <p>

@@ -24,6 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
     initArchiveDropdown();
     initScrollSpy();
     initCitations();
+    initImageLightbox();
 });
 
 function initNavShadow() {
@@ -260,5 +261,106 @@ function initCitations() {
         }
 
         element.innerHTML = '<a href="#ref-' + refId + '">[' + assignedNumbers[refId] + "]</a>";
+    });
+}
+
+function initImageLightbox() {
+    const clickableImages = Array.from(document.querySelectorAll("img"))
+        .filter(function (image) {
+            return !image.closest("[data-lightbox-ignore]") && image.closest("main");
+        });
+
+    if (!clickableImages.length) {
+        return;
+    }
+
+    const overlay = document.createElement("div");
+    overlay.className = "image-lightbox";
+    overlay.setAttribute("aria-hidden", "true");
+    overlay.innerHTML = [
+        '<div class="image-lightbox-backdrop" data-lightbox-close></div>',
+        '<button type="button" class="image-lightbox-close" aria-label="Close image viewer" data-lightbox-close>&times;</button>',
+        '<div class="image-lightbox-panel" role="dialog" aria-modal="true" aria-label="Expanded image">',
+        '<img class="image-lightbox-image" alt="">',
+        "</div>"
+    ].join("");
+    document.body.appendChild(overlay);
+
+    const overlayImage = overlay.querySelector(".image-lightbox-image");
+    const closeTargets = overlay.querySelectorAll("[data-lightbox-close]");
+    let lastFocusedElement = null;
+
+    const closeOverlay = function () {
+        if (!overlay.classList.contains("is-open")) {
+            return;
+        }
+
+        overlay.classList.remove("is-open");
+        overlay.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("lightbox-open");
+
+        window.setTimeout(function () {
+            overlayImage.src = "";
+            overlayImage.alt = "";
+            if (lastFocusedElement && typeof lastFocusedElement.focus === "function") {
+                lastFocusedElement.focus();
+            }
+            lastFocusedElement = null;
+        }, 220);
+    };
+
+    const openOverlay = function (image) {
+        if (!image || (!image.currentSrc && !image.src)) {
+            return;
+        }
+
+        lastFocusedElement = document.activeElement;
+        overlayImage.src = image.currentSrc || image.src;
+        overlayImage.alt = image.alt || "Expanded image";
+        overlayImage.classList.add("is-zoomed");
+        overlay.classList.add("is-open");
+        overlay.setAttribute("aria-hidden", "false");
+        document.body.classList.add("lightbox-open");
+
+        window.setTimeout(function () {
+            const closeButton = overlay.querySelector(".image-lightbox-close");
+            if (closeButton) {
+                closeButton.focus();
+            }
+        }, 0);
+    };
+
+    clickableImages.forEach(function (image) {
+        image.classList.add("clickable-image");
+        image.setAttribute("role", "button");
+        image.setAttribute("tabindex", "0");
+        image.setAttribute("aria-label", image.alt ? "Open image: " + image.alt : "Open image in enlarged view");
+
+        image.addEventListener("click", function () {
+            openOverlay(image);
+        });
+
+        image.addEventListener("keydown", function (event) {
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                openOverlay(image);
+            }
+        });
+    });
+
+    closeTargets.forEach(function (target) {
+        target.addEventListener("click", closeOverlay);
+    });
+
+    overlay.addEventListener("click", function (event) {
+        if (event.target === overlay) {
+            closeOverlay();
+        }
+    });
+
+    window.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+            closeOverlay();
+        }
     });
 }
