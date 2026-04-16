@@ -291,6 +291,30 @@ function initImageLightbox() {
     const closeTargets = overlay.querySelectorAll("[data-lightbox-close]");
     let lastFocusedElement = null;
 
+    const applyResponsiveZoomScale = function () {
+        if (!overlay.classList.contains("is-open") || !overlayImage) {
+            return;
+        }
+
+        const imageRect = overlayImage.getBoundingClientRect();
+        if (!imageRect.width || !imageRect.height) {
+            return;
+        }
+
+        const computedStyles = window.getComputedStyle(overlayImage);
+        const activeScale = parseFloat(computedStyles.getPropertyValue("--lightbox-zoom-scale")) || 1.25;
+        const baseWidth = imageRect.width / activeScale;
+        const baseHeight = imageRect.height / activeScale;
+
+        const maxViewportWidth = window.innerWidth * 0.92;
+        const maxViewportHeight = window.innerHeight * 0.86;
+        const widthScaleLimit = maxViewportWidth / baseWidth;
+        const heightScaleLimit = maxViewportHeight / baseHeight;
+        const scale = Math.max(1, Math.min(1.8, widthScaleLimit, heightScaleLimit));
+
+        overlayImage.style.setProperty("--lightbox-zoom-scale", scale.toFixed(3));
+    };
+
     const closeOverlay = function () {
         if (!overlay.classList.contains("is-open")) {
             return;
@@ -301,6 +325,7 @@ function initImageLightbox() {
         document.body.classList.remove("lightbox-open");
 
         window.setTimeout(function () {
+            overlayImage.style.removeProperty("--lightbox-zoom-scale");
             overlayImage.src = "";
             overlayImage.alt = "";
             if (lastFocusedElement && typeof lastFocusedElement.focus === "function") {
@@ -322,6 +347,15 @@ function initImageLightbox() {
         overlay.classList.add("is-open");
         overlay.setAttribute("aria-hidden", "false");
         document.body.classList.add("lightbox-open");
+
+        if (overlayImage.complete) {
+            requestAnimationFrame(applyResponsiveZoomScale);
+        } else {
+            overlayImage.addEventListener("load", function handleImageLoad() {
+                overlayImage.removeEventListener("load", handleImageLoad);
+                requestAnimationFrame(applyResponsiveZoomScale);
+            });
+        }
 
         window.setTimeout(function () {
             const closeButton = overlay.querySelector(".image-lightbox-close");
@@ -364,4 +398,10 @@ function initImageLightbox() {
             closeOverlay();
         }
     });
+
+    window.addEventListener("resize", function () {
+        if (overlay.classList.contains("is-open")) {
+            requestAnimationFrame(applyResponsiveZoomScale);
+        }
+    }, { passive: true });
 }

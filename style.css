@@ -256,12 +256,12 @@ body.report-page {
     object-fit: contain;
     border-radius: var(--radius-md);
     background: #f7f8f4;
-    transform: scale(1.8);
+    transform: scale(var(--lightbox-zoom-scale, 1.25));
     transform-origin: center center;
 }
 
 .image-lightbox-image.is-zoomed {
-    transform: scale(1.8);
+    transform: scale(var(--lightbox-zoom-scale, 1.25));
 }
 
 .image-lightbox-close {
