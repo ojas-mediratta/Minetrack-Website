@@ -290,29 +290,39 @@ function initImageLightbox() {
     const overlayImage = overlay.querySelector(".image-lightbox-image");
     const closeTargets = overlay.querySelectorAll("[data-lightbox-close]");
     let lastFocusedElement = null;
+    const zoomLevels = [1, 1.5, 2.2, 3.0];
+    let currentZoomIndex = 0;
 
-    const applyResponsiveZoomScale = function () {
-        if (!overlay.classList.contains("is-open") || !overlayImage) {
-            return;
+    const updateZoomCursor = function () {
+        overlayImage.classList.toggle("can-zoom-out", currentZoomIndex >= zoomLevels.length - 1);
+    };
+
+    const setZoom = function (targetIndex, originX, originY) {
+        const clampedIndex = Math.max(0, Math.min(targetIndex, zoomLevels.length - 1));
+        currentZoomIndex = clampedIndex;
+        overlayImage.style.setProperty("--lightbox-zoom-scale", String(zoomLevels[currentZoomIndex]));
+
+        if (typeof originX === "number" && typeof originY === "number") {
+            overlayImage.style.setProperty("--lightbox-origin-x", originX.toFixed(3) + "%");
+            overlayImage.style.setProperty("--lightbox-origin-y", originY.toFixed(3) + "%");
         }
 
-        const imageRect = overlayImage.getBoundingClientRect();
-        if (!imageRect.width || !imageRect.height) {
-            return;
+        updateZoomCursor();
+    };
+
+    const getRelativeClickOrigin = function (event) {
+        const rect = overlayImage.getBoundingClientRect();
+        if (!rect.width || !rect.height) {
+            return { x: 50, y: 50 };
         }
 
-        const computedStyles = window.getComputedStyle(overlayImage);
-        const activeScale = parseFloat(computedStyles.getPropertyValue("--lightbox-zoom-scale")) || 1.25;
-        const baseWidth = imageRect.width / activeScale;
-        const baseHeight = imageRect.height / activeScale;
+        const rawX = ((event.clientX - rect.left) / rect.width) * 100;
+        const rawY = ((event.clientY - rect.top) / rect.height) * 100;
 
-        const maxViewportWidth = window.innerWidth * 0.92;
-        const maxViewportHeight = window.innerHeight * 0.86;
-        const widthScaleLimit = maxViewportWidth / baseWidth;
-        const heightScaleLimit = maxViewportHeight / baseHeight;
-        const scale = Math.max(1, Math.min(1.8, widthScaleLimit, heightScaleLimit));
-
-        overlayImage.style.setProperty("--lightbox-zoom-scale", scale.toFixed(3));
+        return {
+            x: Math.max(0, Math.min(100, rawX)),
+            y: Math.max(0, Math.min(100, rawY))
+        };
     };
 
     const closeOverlay = function () {
@@ -326,12 +336,16 @@ function initImageLightbox() {
 
         window.setTimeout(function () {
             overlayImage.style.removeProperty("--lightbox-zoom-scale");
+            overlayImage.style.removeProperty("--lightbox-origin-x");
+            overlayImage.style.removeProperty("--lightbox-origin-y");
             overlayImage.src = "";
             overlayImage.alt = "";
             if (lastFocusedElement && typeof lastFocusedElement.focus === "function") {
                 lastFocusedElement.focus();
             }
             lastFocusedElement = null;
+            currentZoomIndex = 0;
+            updateZoomCursor();
         }, 220);
     };
 
@@ -343,17 +357,16 @@ function initImageLightbox() {
         lastFocusedElement = document.activeElement;
         overlayImage.src = image.currentSrc || image.src;
         overlayImage.alt = image.alt || "Expanded image";
-        overlayImage.classList.add("is-zoomed");
         overlay.classList.add("is-open");
         overlay.setAttribute("aria-hidden", "false");
         document.body.classList.add("lightbox-open");
 
-        if (overlayImage.complete) {
-            requestAnimationFrame(applyResponsiveZoomScale);
-        } else {
+        setZoom(0, 50, 50);
+
+        if (!overlayImage.complete) {
             overlayImage.addEventListener("load", function handleImageLoad() {
                 overlayImage.removeEventListener("load", handleImageLoad);
-                requestAnimationFrame(applyResponsiveZoomScale);
+                setZoom(0, 50, 50);
             });
         }
 
@@ -387,6 +400,18 @@ function initImageLightbox() {
         target.addEventListener("click", closeOverlay);
     });
 
+    overlayImage.addEventListener("click", function (event) {
+        event.stopPropagation();
+        const origin = getRelativeClickOrigin(event);
+
+        if (currentZoomIndex < zoomLevels.length - 1) {
+            setZoom(currentZoomIndex + 1, origin.x, origin.y);
+            return;
+        }
+
+        setZoom(currentZoomIndex - 1, origin.x, origin.y);
+    });
+
     overlay.addEventListener("click", function (event) {
         if (event.target === overlay) {
             closeOverlay();
@@ -400,8 +425,9 @@ function initImageLightbox() {
     });
 
     window.addEventListener("resize", function () {
-        if (overlay.classList.contains("is-open")) {
-            requestAnimationFrame(applyResponsiveZoomScale);
+        if (!overlay.classList.contains("is-open")) {
+            return;
         }
+        setZoom(currentZoomIndex);
     }, { passive: true });
 }

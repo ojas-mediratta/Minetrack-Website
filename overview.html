@@ -171,12 +171,27 @@
                             EncoderMLP transform regressor architecture. Consecutive Minecraft frames are stacked into a 6-channel input, passed through the transferred encoder and spatial reduction layers, then mapped by an MLP pose head to a 9D relative pose representation for trajectory rollout.
                         </figcaption>
                     </figure>
-                    <div class="report-placeholder">
-                        <p>[Insert an evaluation figure or video still showing input frames alongside the predicted and ground-truth trajectory rollout.]</p>
-                    </div>
+
+                    <h4>Temporal Transformer Transform Regressor</h4>
+                    <p>
+                        We also evaluate an EncoderTransformer regressor that extends the same transferred visual backbone to short temporal sequences. Given an input clip of RGB frames, the model forms overlapping adjacent pairs 
+                        (<em>I<sub>t</sub>, I<sub>t+1</sub></em>) and stacks each pair into a 6&times;256&times;256 tensor. Each pair is encoded by the dual-autoencoder-derived convolutional front end, including the learned bottleneck representation, so the transformer receives motion-aware visual tokens instead of raw pixels.
+                    </p>
+                    <p>
+                        After backbone encoding, two stride-2 spatial reduction convolutions map each latent map to a compact 256&times;2&times;2 representation, which is flattened into a 1024-dimensional token per adjacent frame pair. Tokens are assembled into a temporal sequence of length <em>s-1</em> and augmented with fixed sinusoidal positional encoding. A multi-layer Transformer encoder (multi-head self-attention plus feed-forward blocks) then models temporal dependencies across the clip, allowing the regressor to use longer-horizon context rather than predicting each step independently.
+                    </p>
+                    <p>
+                        The transformer output at each token is passed through a shared MLP head (1024 &rarr; 512 &rarr; 256 &rarr; 9) to predict per-step relative pose. As with the MLP model, the first six outputs represent rotation in a continuous 6D form and the last three represent translation. Rotation outputs are bounded with <em>tanh</em> before conversion to valid rotation matrices, and the resulting SE(3) transforms are composed over time for trajectory rollout and evaluation.
+                    </p>
+                    <figure class="report-figure report-figure-wide">
+                        <img src="media/images/final-report-figures/encoder_transformer.webp" alt="EncoderTransformer temporal transform regressor architecture">
+                        <figcaption>
+                            EncoderTransformer temporal transform regressor architecture. Adjacent frame-pair embeddings are converted to temporal tokens, enriched with positional encoding, and processed by a transformer encoder before per-step 9D relative pose prediction.
+                        </figcaption>
+                    </figure>
 
                     <p>
-                        Portions of the architecture diagrams were generated with NN-SVG, including the overall pipeline figure, the dual autoencoder figure, the MLP regressor figure, and the transformer model figure <span class="cite" data-ref="nnsvg"></span>.
+                        *Portions of the architecture diagrams were generated with NN-SVG, including the overall pipeline figure, the dual autoencoder figure, the MLP regressor figure, and the transformer model figure <span class="cite" data-ref="nnsvg"></span>.
                     </p>
 
                 </section>

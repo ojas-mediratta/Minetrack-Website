@@ -213,7 +213,7 @@ body.report-page {
     z-index: 5000;
     display: grid;
     place-items: center;
-    padding: 2rem;
+    padding: 0;
     opacity: 0;
     pointer-events: none;
     transition: opacity var(--transition-smooth);
@@ -235,12 +235,12 @@ body.report-page {
 .image-lightbox-panel {
     position: relative;
     z-index: 1;
-    width: min(92vw, 1280px);
-    max-height: 88vh;
-    padding: 2.25rem 1.25rem 1.25rem;
-    border-radius: var(--radius-lg);
-    background: rgba(255, 255, 255, 0.98);
-    box-shadow: var(--shadow-lg);
+    width: 100vw;
+    max-height: 100vh;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
     transform: scale(0.96) translateY(10px);
     transition: transform var(--transition-smooth);
 }
@@ -252,16 +252,19 @@ body.report-page {
 .image-lightbox-image {
     display: block;
     width: 100%;
-    max-height: calc(88vh - 2.5rem);
+    max-height: calc(100vh - 1rem);
     object-fit: contain;
     border-radius: var(--radius-md);
-    background: #f7f8f4;
-    transform: scale(var(--lightbox-zoom-scale, 1.25));
-    transform-origin: center center;
+    background: transparent;
+    transform: scale(var(--lightbox-zoom-scale, 1));
+    transform-origin: var(--lightbox-origin-x, 50%) var(--lightbox-origin-y, 50%);
+    transition: transform var(--transition-fast);
+    cursor: zoom-in;
+    will-change: transform;
 }
 
-.image-lightbox-image.is-zoomed {
-    transform: scale(var(--lightbox-zoom-scale, 1.25));
+.image-lightbox-image.can-zoom-out {
+    cursor: zoom-out;
 }
 
 .image-lightbox-close {
