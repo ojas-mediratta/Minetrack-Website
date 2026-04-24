@@ -265,9 +265,24 @@
 
                 <section class="content-panel fade-in" id="gantt-chart" data-spy-section data-nav-label="Gantt Chart">
                     <h2>Gantt Chart</h2>
-                    <p>[Add a project Gantt chart showing each member's planned responsibilities across the full semester.]</p>
-                    <div class="report-placeholder">
-                        <p>[Insert the final Gantt chart image, table, or embedded spreadsheet here.]</p>
+                    <div class="gantt-card" data-gantt-card>
+                        <div class="gantt-card-header">
+                            <div>
+                                <p class="gantt-eyebrow">Spring 2026 timeline</p>
+                                <h3>MineTrack project plan</h3>
+                            </div>
+                            <a class="gantt-download" href="media/images/final-report-figures/MineTrack_GanttChart.xlsx" download>
+                                Download workbook
+                            </a>
+                        </div>
+
+                        <div class="gantt-legend" aria-label="Gantt chart legend">
+                            <span class="gantt-legend-item"><span class="gantt-swatch proposal"></span> Proposal</span>
+                            <span class="gantt-legend-item"><span class="gantt-swatch midterm"></span> Midterm</span>
+                            <span class="gantt-legend-item"><span class="gantt-swatch final"></span> Final</span>
+                        </div>
+
+                        <div class="gantt-track-shell" data-gantt-root></div>
                     </div>
                 </section>
 

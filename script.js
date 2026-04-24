@@ -25,8 +25,43 @@ document.addEventListener("DOMContentLoaded", function () {
     initArchiveDropdown();
     initScrollSpy();
     initCitations();
+    initGanttChart();
     initImageLightbox();
 });
+
+const ganttSchedule = [
+    { title: "Project Team Composition", owner: "All", start: "2026-02-02", due: "2026-02-06", phase: "proposal" },
+    { title: "Introduction & Background", owner: "Ojas", start: "2026-02-09", due: "2026-02-27", phase: "proposal" },
+    { title: "Problem Definition", owner: "Isaac & Edmond", start: "2026-02-09", due: "2026-02-27", phase: "proposal" },
+    { title: "Methods", owner: "Aaron, Auryn, Edmond", start: "2026-02-16", due: "2026-02-27", phase: "proposal" },
+    { title: "Potential Dataset", owner: "Aaron & Auryn", start: "2026-02-14", due: "2026-02-27", phase: "proposal" },
+    { title: "Potential Results & Discussion", owner: "Aaron & Auryn", start: "2026-02-23", due: "2026-02-27", phase: "proposal" },
+    { title: "Dataset Collection", owner: "All", start: "2026-02-14", due: "2026-02-27", phase: "proposal" },
+    { title: "Video Creation & Recording", owner: "All", start: "2026-02-09", due: "2026-02-27", phase: "proposal" },
+    { title: "GitHub Page", owner: "Ojas & Isaac", start: "2026-02-09", due: "2026-02-27", phase: "proposal" },
+    { title: "Model 1 (M1) Design & Selection", owner: "Aaron & Auryn and Ojas", start: "2026-02-28", due: "2026-03-20", phase: "midterm" },
+    { title: "M1 Data Cleaning", owner: "Isaac", start: "2026-02-28", due: "2026-03-16", phase: "midterm" },
+    { title: "M1 Data Visualization", owner: "Isaac & Edmond", start: "2026-02-28", due: "2026-03-20", phase: "midterm" },
+    { title: "M1 Feature Reduction", owner: "Edmond", start: "2026-02-28", due: "2026-03-20", phase: "midterm" },
+    { title: "M1 Implementation & Coding", owner: "All", start: "2026-02-28", due: "2026-03-20", phase: "midterm" },
+    { title: "M1 Results Evaluation", owner: "All", start: "2026-03-17", due: "2026-03-20", phase: "midterm" },
+    { title: "Model 2 (M2) Design & Selection", owner: "Aaron & Auryn and Ojas", start: "2026-02-28", due: "2026-03-20", phase: "midterm" },
+    { title: "M2 Data Cleaning", owner: "Isaac", start: "2026-02-28", due: "2026-03-16", phase: "midterm" },
+    { title: "M2 Data Visualization", owner: "Isaac & Edmond", start: "2026-02-28", due: "2026-03-20", phase: "midterm" },
+    { title: "M2 Feature Reduction", owner: "Edmond", start: "2026-02-28", due: "2026-03-20", phase: "midterm" },
+    { title: "M2 Coding & Implementation", owner: "All", start: "2026-02-28", due: "2026-03-20", phase: "midterm" },
+    { title: "M2 Results Evaluation", owner: "All", start: "2026-03-17", due: "2026-03-20", phase: "midterm" },
+    { title: "Midterm Report", owner: "All", start: "2026-02-28", due: "2026-03-20", phase: "midterm" },
+    { title: "Model 3 (M3) Design & Selection", owner: "Aaron & Auryn and Ojas", start: "2026-03-21", due: "2026-03-30", phase: "final" },
+    { title: "M3 Data Cleaning", owner: "Isaac", start: "2026-03-21", due: "2026-03-30", phase: "final" },
+    { title: "M3 Data Visualization", owner: "Isaac & Edmond", start: "2026-03-30", due: "2026-04-10", phase: "final" },
+    { title: "M3 Feature Reduction", owner: "Edmond", start: "2026-03-21", due: "2026-04-10", phase: "final" },
+    { title: "M3 Implementation & Coding", owner: "All", start: "2026-03-21", due: "2026-04-10", phase: "final" },
+    { title: "M3 Results Evaluation", owner: "All", start: "2026-04-11", due: "2026-04-28", phase: "final" },
+    { title: "M1-M3 Comparison", owner: "All", start: "2026-04-13", due: "2026-04-28", phase: "final" },
+    { title: "Video Creation & Recording", owner: "All", start: "2026-04-14", due: "2026-04-28", phase: "final" },
+    { title: "Final Report", owner: "All", start: "2026-04-14", due: "2026-04-28", phase: "final" }
+];
 
 function initNavShadow() {
     const nav = document.querySelector("nav");
@@ -430,4 +465,92 @@ function initImageLightbox() {
         }
         setZoom(currentZoomIndex);
     }, { passive: true });
+}
+
+function initGanttChart() {
+    const root = document.querySelector("[data-gantt-root]");
+    if (!root) {
+        return;
+    }
+
+    const chart = document.createElement("div");
+    chart.className = "gantt-chart";
+
+    const header = document.createElement("div");
+    header.className = "gantt-chart-header";
+
+    const heading = document.createElement("div");
+    heading.className = "gantt-task-heading";
+    heading.textContent = "Task / owner";
+    header.appendChild(heading);
+
+    const weekLabels = document.createElement("div");
+    weekLabels.className = "gantt-week-labels";
+
+    const projectStart = parseGanttDate("2026-02-02");
+    const weekMs = 7 * 24 * 60 * 60 * 1000;
+
+    for (let weekIndex = 0; weekIndex < 13; weekIndex += 1) {
+        const weekLabel = document.createElement("span");
+        weekLabel.textContent = formatGanttLabel(new Date(projectStart.getTime() + weekIndex * weekMs));
+        weekLabels.appendChild(weekLabel);
+    }
+
+    header.appendChild(weekLabels);
+    chart.appendChild(header);
+
+    ganttSchedule.forEach(function (task) {
+        const taskStart = parseGanttDate(task.start);
+        const taskDue = parseGanttDate(task.due);
+        const startSlot = Math.floor((taskStart.getTime() - projectStart.getTime()) / weekMs) + 1;
+        const endSlot = Math.ceil((((taskDue.getTime() - projectStart.getTime()) / (24 * 60 * 60 * 1000)) + 1) / 7);
+        const span = Math.max(1, endSlot - startSlot + 1);
+
+        const row = document.createElement("div");
+        row.className = "gantt-row";
+
+        const meta = document.createElement("div");
+        meta.className = "gantt-task-meta";
+
+        const title = document.createElement("span");
+        title.className = "gantt-task-title";
+        title.textContent = task.title;
+
+        const owner = document.createElement("span");
+        owner.className = "gantt-task-owner";
+        owner.textContent = task.owner + " | " + formatGanttLabel(taskStart) + " to " + formatGanttLabel(taskDue);
+
+        meta.appendChild(title);
+        meta.appendChild(owner);
+
+        const track = document.createElement("div");
+        track.className = "gantt-track";
+
+        const bar = document.createElement("span");
+        bar.className = "gantt-bar " + task.phase;
+        bar.style.gridColumn = startSlot + " / span " + span;
+        bar.setAttribute("aria-label", task.title + " from " + formatGanttLabel(taskStart) + " to " + formatGanttLabel(taskDue));
+
+        track.appendChild(bar);
+        row.appendChild(meta);
+        row.appendChild(track);
+        chart.appendChild(row);
+    });
+
+    root.replaceChildren(chart);
+}
+
+function parseGanttDate(dateText) {
+    const parts = dateText.split("-").map(function (part) {
+        return Number(part);
+    });
+
+    return new Date(parts[0], parts[1] - 1, parts[2]);
+}
+
+function formatGanttLabel(date) {
+    return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric"
+    });
 }
