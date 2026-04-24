@@ -172,13 +172,31 @@
                         </figcaption>
                     </figure>
 
+                    <h4>Temporal LSTM Transform Regressor</h4>
+                    <p>
+                        We also evaluate an EncoderLSTM regressor that extends the same transferred visual backbone to short temporal clips. Given an input sequence of RGB frames, the model forms overlapping adjacent pairs
+                        (<em>I<sub>t</sub>, I<sub>t+1</sub></em>) and stacks each pair into a 6&times;256&times;256 tensor. Each pair is then encoded by the dual-autoencoder-derived convolutional front end, including the learned bottleneck representation, so the recurrent model receives compact motion-aware visual features rather than raw pixel sequences.
+                    </p>
+                    <p>
+                        After backbone encoding, the same two stride-2 spatial reduction convolutions used by the MLP baseline map each latent map from 64&times;8&times;8 to 128&times;4&times;4 and then to 256&times;2&times;2. Each reduced feature map is flattened into a 1024-dimensional vector, and the vectors from a clip are reshaped into a temporal sequence of shape <em>[batch, s-1, 1024]</em>. This sequence is processed by a two-layer LSTM with hidden size 1024, allowing the model to carry hidden and cell state forward across adjacent frame pairs and use short-horizon temporal context when predicting motion. When no initial state is supplied, the hidden and cell states are initialized to zero tensors at the start of the sequence.
+                    </p>
+                    <p>
+                        The LSTM output at each time step is passed through the same regression head used by the other temporal models (1024 &rarr; 512 &rarr; 256 &rarr; 9) with dropout and ReLU between hidden layers. As with the MLP regressor, the first six outputs represent rotation in a continuous 6D form and the last three represent translation. Rotation outputs are bounded with <em>tanh</em> before conversion to valid rotation matrices, and the predicted SE(3) transforms are composed over time to evaluate rollout behavior, endpoint drift, and accumulated translation error.
+                    </p>
+                    <figure class="report-figure report-figure-wide">
+                        <img src="media/images/final-report-figures/lstm.webp" alt="EncoderLSTM temporal transform regressor architecture">
+                        <figcaption>
+                            EncoderLSTM temporal transform regressor architecture. Adjacent frame-pair embeddings are reshaped into a temporal feature sequence, processed by a two-layer LSTM, and passed through a shared pose regressor for per-step 9D relative pose prediction.
+                        </figcaption>
+                    </figure>
+
                     <h4>Temporal Transformer Transform Regressor</h4>
                     <p>
                         We also evaluate an EncoderTransformer regressor that extends the same transferred visual backbone to short temporal sequences. Given an input clip of RGB frames, the model forms overlapping adjacent pairs 
                         (<em>I<sub>t</sub>, I<sub>t+1</sub></em>) and stacks each pair into a 6&times;256&times;256 tensor. Each pair is encoded by the dual-autoencoder-derived convolutional front end, including the learned bottleneck representation, so the transformer receives motion-aware visual tokens instead of raw pixels.
                     </p>
                     <p>
-                        After backbone encoding, two stride-2 spatial reduction convolutions map each latent map to a compact 256&times;2&times;2 representation, which is flattened into a 1024-dimensional token per adjacent frame pair. Tokens are assembled into a temporal sequence of length <em>s-1</em> and augmented with fixed sinusoidal positional encoding. A multi-layer Transformer encoder (multi-head self-attention plus feed-forward blocks) then models temporal dependencies across the clip, allowing the regressor to use longer-horizon context rather than predicting each step independently.
+                        After backbone encoding, two stride-2 spatial reduction convolutions map each latent map to a compact 256&times;2&times;2 representation, which is flattened into a 1024-dimensional token per adjacent frame pair. Tokens are assembled into a temporal sequence of length <em>s-1</em> and augmented with a learned positional embedding. A multi-layer Transformer encoder (multi-head self-attention plus feed-forward blocks) then models temporal dependencies across the clip, allowing the regressor to use longer-horizon context rather than predicting each step independently.
                     </p>
                     <p>
                         The transformer output at each token is passed through a shared MLP head (1024 &rarr; 512 &rarr; 256 &rarr; 9) to predict per-step relative pose. As with the MLP model, the first six outputs represent rotation in a continuous 6D form and the last three represent translation. Rotation outputs are bounded with <em>tanh</em> before conversion to valid rotation matrices, and the resulting SE(3) transforms are composed over time for trajectory rollout and evaluation.
