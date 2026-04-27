@@ -64,9 +64,14 @@
                     <p>
                         The data is organized by run because VO is inherently temporal. During preprocessing, consecutive frames are paired as <em>I<sub>t</sub></em> and <em>I<sub>t+1</sub></em>, and their poses are converted into relative rotation and translation targets. The recordings span multiple terrain types and motion patterns, including forward motion, turning, curved paths, elevation changes, and still periods; held-out evaluation runs are kept separate so trajectory plots and videos measure generalization rather than memorization.
                     </p>
-                    <div class="report-placeholder">
-                        <p>[Add final dataset counts here: number of runs, total frames, approximate duration, biome split, and train/validation/evaluation split.]</p>
-                    </div>
+
+                    <figure class="report-figure report-figure-wide">
+                        <img src="media/images/final-report-figures/data_visual.png" alt="Overall MineTrack visual odometry pipeline" style="width: 80%; margin: 0 auto; display: block;">
+                        <figcaption>
+                            The dataset contains thousands of frame pairs from diverse terrains.
+                        </figcaption>
+                    </figure>
+
                 </section>
 
                 <section class="content-panel fade-in" id="problem-definition" data-spy-section data-nav-label="Problem Definition">
@@ -226,9 +231,15 @@
                     <p>
                         Reconstruction outputs provide a qualitative view of what information is retained in the learned latent space. The single-image autoencoder reconstructs one Minecraft frame, while the dual autoencoder reconstructs the first frame together with an image difference target.
                     </p>
-                    <div class="report-placeholder">
-                        <p>[Insert the final reconstruction figures and annotate what each model preserves or loses.]</p>
-                    </div>
+                    <figure class="report-figure">
+                        <div class="figure-pair-grid" style="width: 80%; margin: 0 auto;">
+                            <img src="media/images/final-report-figures/Results/Dual_Autoencoder/encoder_visualization.png" alt="Dual autoencoder reconstruction visualization 1">
+                            <img src="media/images/final-report-figures/Results/Dual_Autoencoder/encoder_visualization2.png" alt="Dual autoencoder reconstruction visualization 2">
+                        </div>
+                        <figcaption>
+                            Top left: image n. Top right: image n+1. Bottom left: reconstructed image n. Bottom right: reconstructed image difference.
+                        </figcaption>
+                    </figure>
 
                     <h4>Training Loss Results</h4>
                     <p>
