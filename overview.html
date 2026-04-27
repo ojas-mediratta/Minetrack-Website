@@ -290,6 +290,25 @@
                         </figure>
                     </div>
 
+                    <p>
+                        To extend the comparison to temporal models, we also trained an EncoderLSTM variant that carries hidden state across adjacent frame pairs, and an EncoderTransformer variant that uses multi-head self-attention to model longer-horizon context. Both models use the same transferred visual backbone and trajectory rollout evaluation setup.
+                    </p>
+
+                    <div class="figure-pair-grid figure-pair-separate-captions">
+                        <figure class="figure-cell">
+                            <img src="media/images/final-report-figures/Results/LSTM/LSTM_trajectory.png" alt="LSTM temporal regressor trajectory result">
+                            <figcaption>
+                                EncoderLSTM trajectory prediction on a complex sequence. The LSTM processes temporal context across frame pairs and produces a trajectory that tracks rotation well but still exhibits translation drift over the long horizon.
+                            </figcaption>
+                        </figure>
+                        <figure class="figure-cell">
+                            <img src="media/images/final-report-figures/Results/Transformer/Transformer_trajectory.png" alt="Transformer temporal regressor trajectory result">
+                            <figcaption>
+                                EncoderTransformer trajectory prediction on a comparable sequence. The transformer's global attention pattern produces smoother rotation estimates and maintains endpoint consistency comparable to the rollout-loss MLP.
+                            </figcaption>
+                        </figure>
+                    </div>
+
                     <h4>Interpretation and Limitations</h4>
                     <p>
                         The midterm checkpoint showed that the pipeline can be trained end-to-end, but the downstream regression stage was more sensitive than the autoencoders. The final report should state what changed after the midterm, what worked best, and where the system still fails.
