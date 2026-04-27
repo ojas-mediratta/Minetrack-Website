@@ -224,7 +224,7 @@
 
                     <h4>Summary of Current Results</h4>
                     <p>
-                        The current implementation produces reconstruction outputs, autoencoder and MLP training loss curves, transform-related error plots, and a trajectory/yaw comparison plot. These results provide an initial view of reconstruction quality, training behavior, and downstream motion prediction performance.
+                        The final implementation produces reconstruction outputs, autoencoder and MLP training loss curves, transform-related error plots, and trajectory/yaw comparison plots across the representation, regression, and temporal models. These results show how reconstruction quality, latent usefulness, and motion prediction accuracy relate to one another.
                     </p>
 
                     <h4>Autoencoder Reconstruction Results</h4>
@@ -245,26 +245,61 @@
                     <p>
                         Training loss curves show how reconstruction and regression behavior evolve over time. The autoencoders trained more smoothly than the downstream regressor, while the MLP required additional tuning to avoid degenerate identity-transform predictions.
                     </p>
-                    <div class="report-placeholder">
-                        <p>[Add the final loss curves and note the most important training differences between the three models.]</p>
+                    <p>
+                        In the final runs, the dual autoencoder converged fastest and most steadily: its combined loss drops sharply early in training and then flattens, which is what we want from the representation stage. The supervised regressors were more sensitive. The magnitude-loss version was useful for preventing identity-transform collapse, while the rollout-loss version trained more slowly because it was optimized for long-horizon consistency instead of only one-step fit.
+                    </p>
+
+                    <div class="figure-pair-grid figure-pair-separate-captions">
+                        <figure class="figure-cell">
+                            <img src="media/images/final-report-figures/Results/Dual_Autoencoder/losscurve_ojas.png" alt="Dual autoencoder combined loss">
+                            <figcaption>
+                                Dual autoencoder combined loss over 10 epochs. The curve falls quickly at the start and then levels off, showing stable convergence of the representation model.
+                            </figcaption>
+                        </figure>
+                        <figure class="figure-cell">
+                            <img src="media/images/final-report-figures/Results/MLP_Regressor_RolloutLoss/losscurve_ojas_60epoch.png" alt="Rollout-loss MLP training curve">
+                            <figcaption>
+                                Rollout-aware pose regressor training over 60 epochs. The longer schedule improves trajectory consistency, but it converges more gradually than the reconstruction model.
+                            </figcaption>
+                        </figure>
                     </div>
 
                     <h4>Pose Prediction Performance</h4>
                     <p>
                         The transform and rotation error plots compare predicted relative motion against ground truth and provide the clearest view of pose-regression performance. A final comparison should explain which representation worked best and why.
                     </p>
-                    <div class="report-placeholder">
-                        <p>[Add the final quantitative metrics here, such as trajectory error, rotation error, or any other score used to compare models.]</p>
-                        <p>[Explain the tradeoffs between reconstruction quality, embedding usefulness, and motion prediction accuracy.]</p>
+                    <p>
+                        The best final comparison comes from the trajectory plots rather than reconstruction alone. The magnitude-loss regressor tracks yaw reasonably well on shorter segments and was the first version that stopped collapsing to identity outputs, but the rollout-loss model gives the clearest long-horizon behavior. In the shown rollout, the endpoint error is 169.16 and the path ratio is 0.855, which is a stronger sign that the predicted path is staying closer to the ground truth over time.
+                    </p>
+                    <p>
+                        The main tradeoff is that better reconstruction does not automatically produce a better pose embedding. The dual autoencoder gives us a stable latent space, but the motion head only becomes useful when the loss function rewards translation and trajectory consistency, not just image reconstruction. That is why the more motion-aware regression losses outperform the simpler setup even though they are harder to optimize.
+                    </p>
+
+                    <div class="figure-pair-grid figure-pair-separate-captions">
+                        <figure class="figure-cell">
+                            <img src="media/images/final-report-figures/Results/MLP_Regressor_MagLoss/topdown_yaw_60epoch.png" alt="Magnitude-loss trajectory and yaw comparison">
+                            <figcaption>
+                                Magnitude-loss regressor on a 60-epoch run. The trajectory and yaw traces remain close to the ground truth on shorter sequences, showing why the magnitude term helped prevent collapse.
+                            </figcaption>
+                        </figure>
+                        <figure class="figure-cell">
+                            <img src="media/images/final-report-figures/Results/MLP_Regressor_RolloutLoss/longrun.png" alt="Rollout-loss long-horizon trajectory and error comparison">
+                            <figcaption>
+                                Rollout-loss regressor on a long run. The plot reports endpoint = 169.16 and path ratio = 0.855, indicating better long-horizon consistency but still noticeable translation drift.
+                            </figcaption>
+                        </figure>
                     </div>
 
                     <h4>Interpretation and Limitations</h4>
                     <p>
                         The midterm checkpoint showed that the pipeline can be trained end-to-end, but the downstream regression stage was more sensitive than the autoencoders. The final report should state what changed after the midterm, what worked best, and where the system still fails.
                     </p>
-                    <div class="report-placeholder">
-                        <p>[Summarize the strongest result, the main limitation, and the most important next step.]</p>
-                    </div>
+                    <p>
+                        Since the midterm, the biggest improvement was moving from a fragile one-step regressor to losses that explicitly reward motion consistency. The strongest result is that the dual autoencoder now provides a stable, reusable latent space and the rollout-aware regressor produces the cleanest trajectory among the final runs. The main limitation is that translation drift still accumulates over long sequences, especially when the scene changes quickly or the model is asked to extrapolate beyond the patterns it saw during training.
+                    </p>
+                    <p>
+                        The most important next step is to keep the motion-aware losses, extend the comparison to longer and more varied sequences, and continue testing temporal models such as the LSTM and transformer on the same rollout metrics. That would make it easier to separate representation quality from sequence modeling and to identify which part of the pipeline needs the most improvement.
+                    </p>
                 </section>
 
 
