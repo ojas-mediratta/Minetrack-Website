@@ -291,7 +291,7 @@
                         </figure>
                     </div>
 
-                    <h4>Pose Prediction Performance</h4>
+                    <h4>Pose Regression Performance</h4>
                     <p>
                         The transform and rotation error plots compare predicted relative motion against ground truth and provide the clearest view of pose-regression performance. A final comparison should explain which representation worked best and why.
                     </p>
@@ -318,7 +318,7 @@
                     </div>
 
                     <p>
-                        [Write content here]
+                        The MLP accurately captured rotation but struggled with translation accuracy. This is likely due to the MLP’s lack of memory, since it cannot learn momentum trends over time (consecutive frames tend to have similar transforms). The LSTM performed better on translation but introduced rotation noise, and the transformer struggled with translation and rotation. Both the LSTM and transformer were difficult to sufficiently train because of the high computational requirements of training sequential models. Vision transformer architectures are known to be particularly data- and training-hungry, so the sequential models likely might show better performance with more training time.
                     </p>
 
                     <div class="figure-pair-grid figure-pair-separate-captions" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
@@ -361,13 +361,18 @@
 
                     <h4>Interpretation and Limitations</h4>
                     <p>
-                        The midterm checkpoint showed that the pipeline can be trained end-to-end, but the downstream regression stage was more sensitive than the autoencoders. The final report should state what changed after the midterm, what worked best, and where the system still fails.
+                        The dual autoencoder gives the most stable latent features we tested, and when those features are paired with motion-aware loss terms the regressor produces the cleanest rollouts. Good pixel reconstruction helps, but reconstruction quality alone doesn't guarantee accurate pose estimates. The loss design (especially translation-focused, multi-horizon terms) matters a lot.                    </p>
+                    <p>
+                        Model behavior is mixed: the MLP captures yaw well on short runs but accumulates translation drift over long rollouts, which is an issue that all the regression models struggled with. The LSTM and transformer sometimes help long-horizon consistency, but need more data and running to beat the MLP reliably.
                     </p>
                     <p>
-                        Since the midterm, the biggest improvement was moving from a fragile one-step regressor to losses that explicitly reward motion consistency. The strongest result is that the dual autoencoder now provides a stable, reusable latent space and the rollout-aware regressor produces the cleanest trajectory among the final runs. The main limitation is that translation drift still accumulates over long sequences, especially when the scene changes quickly or the model is asked to extrapolate beyond the patterns it saw during training.
+                        The most important next step is to keep the motion-aware losses, extend the comparison to longer and more varied sequences, and continue testing temporal models such as the LSTM and transformer on the same rollout metrics. That would make it easier to separate representation quality from sequence modeling and to identify which part of the pipeline needs the most improvement. 
                     </p>
                     <p>
-                        The most important next step is to keep the motion-aware losses, extend the comparison to longer and more varied sequences, and continue testing temporal models such as the LSTM and transformer on the same rollout metrics. That would make it easier to separate representation quality from sequence modeling and to identify which part of the pipeline needs the most improvement.
+                        In terms of the Transformer Encoder architecture, there are two main improvements that we are looking to make. First off, the positional encodings currently lack temporal information about their associated sequence. Transformers are permutation-invariant and rely on their positional encodings for learning temporal dependencies, compared to LSTMs which have an inherent inductive bias for temporal order. The sinusoidal embeddings serve no other purpose than being unique identifiers for sequence position. Additionally the positional encodings may have been applied to the wrong dimension of our input feature tensor.
+                    </p>
+                    <p>
+                        Finally, we are looking to completely overhaul the Transformer Encoder architecture. Currently we are using a transformer on the front end which receives compressed pairs of frames prior to any temporal reasoning. By doing this, we are throwing away a lot of spatial evidence the model could have used to better infer motion. Instead we are looking to implement a Vision Transformer on the backend, which is a far more common approach.
                     </p>
                 </section>
 
@@ -415,32 +420,56 @@
                             <tr>
                                 <td>Ojas</td>
                                 <td>Introduction &amp; Background; GitHub Page; model design/selection planning (M1-M3).</td>
-                                <td>Proposal: Introduction &amp; Background content for report/slides/video. Midterm: model training workflow notebook and Methods/Results writeup. Final: regression-model implementation, figures/visualizations, and website updates.</td>
+                                <td>
+                                    <div><strong>Proposal:</strong> Introduction &amp; Background content for report/slides/video.</div>
+                                    <div><strong>Midterm:</strong> Model training workflow notebook and Methods/Results writeup.</div>
+                                    <div><strong>Final:</strong> Model implementation and training (Regression Models), GitHub Pages Website, Figures/Visualizations.</div>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Isaac</td>
                                 <td>Problem Definition; GitHub Page; M1/M2/M3 data cleaning; M1/M2/M3 data visualization.</td>
-                                <td>Proposal: Problem Definition and motivation support in slides/video. Midterm: quantitative metrics, model training, and data visualizations. Final: website integration, awards/formatting support, and report assembly across milestones.</td>
+                                <td>
+                                    <div><strong>Proposal:</strong> Problem Definition and motivation support in slides/video.</div>
+                                    <div><strong>Midterm:</strong> Quantitative metrics, model training, and data visualizations.</div>
+                                    <div><strong>Final:</strong> Website integration, awards/formatting support, and report assembly across milestones.</div>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Edmond</td>
                                 <td>Problem Definition; Methods; M1/M2/M3 feature reduction; M1/M2/M3 data visualization.</td>
-                                <td>Proposal: motivation content and problem-definition slide support. Midterm: data augmentation and Potential Dataset section. Final: feature engineering/reduction, analysis visualizations, and contribution-table/Gantt-chart maintenance.</td>
+                                <td>
+                                    <div><strong>Proposal:</strong> motivation content and problem-definition slide support.</div>
+                                    <div><strong>Midterm:</strong> Data augmentation and Potential Dataset section.</div>
+                                    <div><strong>Final:</strong> Feature engineering/reduction, analysis visualizations, and contribution-table/Gantt-chart maintenance.</div>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Aaron</td>
                                 <td>Methods; Potential Dataset; Potential Results &amp; Discussion; model design/selection planning (M1-M3).</td>
-                                <td>Proposal: methods/results/impact content across report, slides, and video, plus proposal video editing. Midterm: plains dataset collection, autoencoder/MLP implementation, and result visualizations. Final: continued model improvement and evaluation support.</td>
+                                <td>
+                                    <div><strong>Proposal:</strong> Methods/results/impact content across report, slides, and video, plus proposal video editing.</div>
+                                    <div><strong>Midterm:</strong> Plains dataset collection, autoencoder/MLP implementation, and result visualizations.</div>
+                                    <div><strong>Final:</strong> LSTM + transformer refinement, final presentation slides (autoencoder + MLP), final report results.</div>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Auryn</td>
                                 <td>Methods; Potential Dataset; Potential Results &amp; Discussion; model design/selection planning (M1-M3).</td>
-                                <td>Proposal: dataset/methods/results content plus contribution-chart and documentation support. Midterm: large-scale multi-biome dataset collection and README/data-collection-mod setup instructions. Final: LSTM integration work and temporal-model experimentation support.</td>
+                                <td>
+                                    <div><strong>Proposal:</strong> Dataset/methods/results content plus contribution-chart and documentation support.</div>
+                                    <div><strong>Midterm:</strong> Large-scale multi-biome dataset collection and README/data-collection-mod setup instructions.</div>
+                                    <div><strong>Final:</strong> LSTM and Transformer Encoder models, final presentation slides (LSTM + Transformer Encoder), final report methods refinement and limitations of Transformer Encoder architecture.</div>
+                                </td>
                             </tr>
                             <tr>
                                 <td>All Members (Team-Wide)</td>
                                 <td>Project Team Composition; Dataset Collection; Video Creation &amp; Recording; M1/M2/M3 implementation &amp; coding; results evaluation; Midterm Report; M1-M3 comparison; Final Report.</td>
-                                <td>Proposal: team composition/planning deliverables and proposal media. Midterm: shared implementation, evaluation, and midterm report submission. Final: model-comparison synthesis, final report integration, and presentation/video deliverables.</td>
+                                <td>
+                                    <div><strong>Proposal:</strong> team composition/planning deliverables and proposal media.</div>
+                                    <div><strong>Midterm:</strong> shared implementation, evaluation, and midterm report submission.</div>
+                                    <div><strong>Final:</strong> model-comparison synthesis, final report integration, and presentation/video deliverables.</div>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
