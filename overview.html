@@ -277,7 +277,7 @@
 
                     <div class="figure-pair-grid figure-pair-separate-captions">
                         <figure class="figure-cell">
-                            <img src="media/images/final-report-figures/Results/MLP_Regressor_MagLoss/topdown_yaw_60epoch.png" alt="Magnitude-loss trajectory and yaw comparison">
+                            <img src="media/images/final-report-figures/Results/MLP_Regressor_RolloutLoss/shortrun.png" alt="Magnitude-loss trajectory and yaw comparison">
                             <figcaption>
                                 Magnitude-loss regressor on a 60-epoch run. The trajectory and yaw traces remain close to the ground truth on shorter sequences, showing why the magnitude term helped prevent collapse.
                             </figcaption>
@@ -291,20 +291,29 @@
                     </div>
 
                     <p>
-                        To extend the comparison to temporal models, we also trained an EncoderLSTM variant that carries hidden state across adjacent frame pairs, and an EncoderTransformer variant that uses multi-head self-attention to model longer-horizon context. Both models use the same transferred visual backbone and trajectory rollout evaluation setup.
+                        [Write content here]
                     </p>
 
-                    <div class="figure-pair-grid figure-pair-separate-captions">
-                        <figure class="figure-cell">
-                            <img src="media/images/final-report-figures/Results/LSTM/LSTM_trajectory.png" alt="LSTM temporal regressor trajectory result" style="width: 50%; max-width: 300px; margin: 0 auto; display: block;">
+                    <div class="figure-pair-grid figure-pair-separate-captions" style="display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 20px;">
+                        <figure class="figure-cell" style="justify-self: center; max-width: 60%;">
+                            <img src="media/images/final-report-figures/Results/MLP_Regressor_MagLoss/topdown_yaw_60epoch.png" alt="MLP topdown yaw 60 epoch" style="width: 100%;">
                             <figcaption>
-                                EncoderLSTM trajectory prediction on a complex sequence. The LSTM processes temporal context across frame pairs and produces a trajectory that tracks rotation well but still exhibits translation drift over the long horizon.
+                                60 Epoch MLP (Plains)
+                            </figcaption>
+                        </figure>
+                    </div>
+
+                    <div class="figure-pair-grid figure-pair-separate-captions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <figure class="figure-cell">
+                            <img src="media/images/final-report-figures/Results/LSTM/10_epoch/topdown_yaw_epoch30.png" alt="LSTM topdown yaw 30 epoch">
+                            <figcaption>
+                                30 Epoch LSTM (Plains)
                             </figcaption>
                         </figure>
                         <figure class="figure-cell">
-                            <img src="media/images/final-report-figures/Results/Transformer/Transformer_trajectory.png" alt="Transformer temporal regressor trajectory result" style="width: 70%; max-width: 400px; margin: 0 auto; display: block;">
+                            <img src="media/images/final-report-figures/Results/Transformer/topdown_yaw_epoch30.png" alt="Transformer topdown yaw 30 epoch">
                             <figcaption>
-                                EncoderTransformer trajectory prediction on a comparable sequence. The transformer's global attention pattern produces smoother rotation estimates and maintains endpoint consistency comparable to the rollout-loss MLP.
+                                30 Epoch Transformer (Plains)
                             </figcaption>
                         </figure>
                     </div>
