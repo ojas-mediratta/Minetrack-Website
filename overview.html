@@ -199,8 +199,10 @@
 
                     <h4>Temporal Transformer Transform Regressor</h4>
                     <p>
-                        We also evaluate an EncoderTransformer regressor that extends the same transferred visual backbone to short temporal sequences. Given an input clip of RGB frames, the model forms overlapping adjacent pairs 
-                        (<em>I<sub>t</sub>, I<sub>t+1</sub></em>) and stacks each pair into a 6&times;256&times;256 tensor. Each pair is encoded by the dual-autoencoder-derived convolutional front end, including the learned bottleneck representation, so the transformer receives motion-aware visual tokens instead of raw pixels.
+                        A major downside to the sequential nature of the Encoder-LSTM architecture was the inability to parallelize during training, leading to unreasonably long compute times. To address this while still maintaining the ability to model long-range temporal dependencies, we implemented our last model: the transformer encoder-based architecture. We speculated that we could utilize the self-attention mechanism in place of recurrence to compute dependencies simultaneously across the entire frame sequence.
+                    </p>
+                    <p>
+                        Given an input clip of RGB frames, the model forms overlapping adjacent pairs (<em>I<sub>t</sub>, I<sub>t+1</sub></em>) and stacks each pair into a 6&times;256&times;256 tensor. Each pair is encoded by the dual-autoencoder-derived convolutional front end, including the learned bottleneck representation, so the transformer receives motion-aware visual tokens instead of raw pixels.
                     </p>
                     <p>
                         After backbone encoding, two stride-2 spatial reduction convolutions map each latent map to a compact 256&times;2&times;2 representation, which is flattened into a 1024-dimensional token per adjacent frame pair. Tokens are assembled into a temporal sequence of length <em>s-1</em> and augmented with a learned positional embedding. A multi-layer Transformer encoder (multi-head self-attention plus feed-forward blocks) then models temporal dependencies across the clip, allowing the regressor to use longer-horizon context rather than predicting each step independently.
