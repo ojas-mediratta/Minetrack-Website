@@ -279,13 +279,13 @@
                         <figure class="figure-cell">
                             <img src="media/images/final-report-figures/Results/MLP_Regressor_RolloutLoss/shortrun.png" alt="Magnitude-loss trajectory and yaw comparison">
                             <figcaption>
-                                Magnitude-loss regressor on a 60-epoch run. The trajectory and yaw traces remain close to the ground truth on shorter sequences, showing why the magnitude term helped prevent collapse.
+                                Rollout-loss regressor on a short run. Endpoint error = 17.99 and path ratio = 0.799. Overall trajectory is modestly close to ground truth and yaw tracking is strong.
                             </figcaption>
                         </figure>
                         <figure class="figure-cell">
                             <img src="media/images/final-report-figures/Results/MLP_Regressor_RolloutLoss/longrun.png" alt="Rollout-loss long-horizon trajectory and error comparison">
                             <figcaption>
-                                Rollout-loss regressor on a long run. The plot reports endpoint = 169.16 and path ratio = 0.855, indicating better long-horizon consistency but still noticeable translation drift.
+                                Rollout-loss regressor on a long run. Endpoint error = 169.16 and path ratio = 0.855. Yaw tracking is improved, but with long term translation drift still present.
                             </figcaption>
                         </figure>
                     </div>
@@ -294,26 +294,23 @@
                         [Write content here]
                     </p>
 
-                    <div class="figure-pair-grid figure-pair-separate-captions" style="display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 20px;">
-                        <figure class="figure-cell" style="justify-self: center; max-width: 60%;">
-                            <img src="media/images/final-report-figures/Results/MLP_Regressor_MagLoss/topdown_yaw_60epoch.png" alt="MLP topdown yaw 60 epoch" style="width: 100%;">
+                    <div class="figure-pair-grid figure-pair-separate-captions" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+                        <figure class="figure-cell" style="justify-self: center;">
+                            <img src="media/images/final-report-figures/Results/LSTM/10_epoch/topdown_yaw_epoch30.png" alt="LSTM topdown yaw 30 epoch" style="width: 70% !important; margin: 0 auto; display: block;">
                             <figcaption>
-                                60 Epoch MLP (Plains)
+                                30 Epoch LSTM (Plains). Translation tracking is modest, but yaw tracking is weaker.
                             </figcaption>
                         </figure>
-                    </div>
-
-                    <div class="figure-pair-grid figure-pair-separate-captions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                        <figure class="figure-cell">
-                            <img src="media/images/final-report-figures/Results/LSTM/10_epoch/topdown_yaw_epoch30.png" alt="LSTM topdown yaw 30 epoch">
+                        <figure class="figure-cell" style="justify-self: center; margin-top: 6.5px;">
+                            <img src="media/images/final-report-figures/Results/MLP_Regressor_MagLoss/topdown_yaw_60epoch.png" alt="MLP topdown yaw 60 epoch" style="width: 100% !important; margin: 0 auto; display: block;">
                             <figcaption>
-                                30 Epoch LSTM (Plains)
+                                60 Epoch MLP (Plains). Yaw tracking is exceptional, and the overall path length is consistent, but translation drift accumulates.
                             </figcaption>
                         </figure>
-                        <figure class="figure-cell">
-                            <img src="media/images/final-report-figures/Results/Transformer/topdown_yaw_epoch30.png" alt="Transformer topdown yaw 30 epoch">
+                        <figure class="figure-cell" style="justify-self: center;">
+                            <img src="media/images/final-report-figures/Results/Transformer/topdown_yaw_epoch30.png" alt="Transformer topdown yaw 30 epoch" style="width: 70% !important; margin: 0 auto; display: block;">
                             <figcaption>
-                                30 Epoch Transformer (Plains)
+                                30 Epoch Transformer (Plains). Neither translation nor yaw tracking is strong.
                             </figcaption>
                         </figure>
                     </div>
